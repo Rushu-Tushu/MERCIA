@@ -1,0 +1,8 @@
+{
+    "id": "website",
+    "name": "RushMail",
+    "description": "An email tracking and portfolio page analytics dashboard",
+    "url": "https://example.com",
+    "hostname": "rushmail.site",
+    "port": 8080
+}
