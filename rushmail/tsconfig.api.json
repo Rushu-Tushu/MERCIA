@@ -5,9 +5,9 @@
 		"lib": [
 			"ES2023"
 		],
-		"module": "CommonJS",
+		"module": "NodeNext",
 		"skipLibCheck": true,
-		"moduleResolution": "node",
+		"moduleResolution": "NodeNext",
 		"allowImportingTsExtensions": true,
 		"isolatedModules": true,
 		"moduleDetection": "force",
