@@ -1,8 +1,8 @@
 import { Hono } from "hono";
-import { db } from "../database/index";
-import * as schema from "../database/schema";
-import { eq, desc, and, gte, count, sql } from "drizzle-orm";
-import { requireAuth, authMiddleware } from "../middleware/auth";
+import { db } from '../database/index.js';
+import * as schema from '../database/schema.js';
+import { eq, desc, and } from "drizzle-orm";
+import { requireAuth, authMiddleware } from '../middleware/auth.js';
 import { subDays, startOfDay, format } from "date-fns";
 
 export const analyticsRouter = new Hono()

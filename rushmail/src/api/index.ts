@@ -1,14 +1,15 @@
+/// <reference path="./types.d.ts" />
 import { Hono } from "hono";
 import { cors } from "hono/cors";
-import { auth } from "./auth";
-import { authMiddleware } from "./middleware/auth";
-import { emailsRouter } from "./routes/emails";
-import { trackingRouter } from "./routes/tracking";
-import { analyticsRouter } from "./routes/analytics";
-import { notificationsRouter } from "./routes/notifications";
-import { templatesRouter } from "./routes/templates";
-import { resumesRouter } from "./routes/resumes";
-import { connectedAccountsRouter } from "./routes/connected-accounts";
+import { auth } from './auth.js';
+import { authMiddleware } from './middleware/auth.js';
+import { emailsRouter } from './routes/emails.js';
+import { trackingRouter } from './routes/tracking.js';
+import { analyticsRouter } from './routes/analytics.js';
+import { notificationsRouter } from './routes/notifications.js';
+import { templatesRouter } from './routes/templates.js';
+import { resumesRouter } from './routes/resumes.js';
+import { connectedAccountsRouter } from './routes/connected-accounts.js';
 
 const app = new Hono()
   .use(cors({ origin: (origin) => origin ?? "*", credentials: true }))

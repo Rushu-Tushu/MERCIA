@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { DashboardLayout } from "../components/dashboard-layout";
 import { authClient } from "../lib/auth";
-import { Check, AlertCircle, Mail } from "lucide-react";
+import { Check, AlertCircle } from "lucide-react";
 
 const inputStyle: React.CSSProperties = {
   width: "100%",

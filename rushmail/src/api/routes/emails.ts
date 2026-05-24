@@ -1,10 +1,10 @@
 import { Hono } from "hono";
-import { db } from "../database/index";
-import * as schema from "../database/schema";
+import { db } from '../database/index.js';
+import * as schema from '../database/schema.js';
 import { eq, desc, and } from "drizzle-orm";
-import { requireAuth, authMiddleware } from "../middleware/auth";
+import { requireAuth, authMiddleware } from '../middleware/auth.js';
 import { randomUUID } from "crypto";
-import { account } from "../database/auth-schema";
+import { account } from '../database/auth-schema.js';
 
 // ─── Send via Gmail API ───────────────────────────────────────────────────────
 async function refreshGmailToken(refreshToken: string): Promise<{ accessToken: string; expiresAt: Date }> {

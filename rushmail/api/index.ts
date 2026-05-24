@@ -1,11 +1,5 @@
+/// <reference path="../src/api/types.d.ts" />
 import { handle } from "hono/vercel";
-import app from "../src/api/index";
+import app from '../src/api/index.js';
 
-export default (req: any, res: any) => {
-  const matchedPath = req.headers["x-matched-path"];
-  if (matchedPath) {
-    const urlObj = new URL(req.url, "http://localhost");
-    req.url = matchedPath + urlObj.search;
-  }
-  return handle(app)(req, res);
-};
+export default handle(app);

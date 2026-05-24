@@ -1,7 +1,7 @@
 import { Hono } from "hono";
-import { db } from "../database/index";
-import * as schema from "../database/schema";
-import { eq, and } from "drizzle-orm";
+import { db } from '../database/index.js';
+import * as schema from '../database/schema.js';
+import { eq } from "drizzle-orm";
 import { randomUUID } from "crypto";
 
 // 1x1 transparent GIF

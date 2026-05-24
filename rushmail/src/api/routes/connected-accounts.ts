@@ -1,8 +1,8 @@
 import { Hono } from "hono";
-import { db } from "../database/index";
-import { account } from "../database/auth-schema";
+import { db } from '../database/index.js';
+import { account } from '../database/auth-schema.js';
 import { eq, and } from "drizzle-orm";
-import { requireAuth, authMiddleware } from "../middleware/auth";
+import { requireAuth, authMiddleware } from '../middleware/auth.js';
 
 export const connectedAccountsRouter = new Hono()
   .use("*", authMiddleware)

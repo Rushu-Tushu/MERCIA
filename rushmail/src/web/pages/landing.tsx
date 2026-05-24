@@ -1,10 +1,10 @@
-import { useState, useEffect, useRef } from "react";
-import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "wouter";
 import {
   BarChart3, Mail, Shield, Clock, Eye, MousePointer,
   FileText, Star, ArrowRight, Check, Menu, X, Bell, TrendingUp,
-  Activity, Users, ChevronRight
+  Activity, Users
 } from "lucide-react";
 
 // ─── BRAND ────────────────────────────────────────────────────────────────────
@@ -13,11 +13,11 @@ const ORANGE_DIM = "rgba(255,77,0,0.12)";
 const ORANGE_BORDER = "rgba(255,77,0,0.25)";
 
 // ─── VARIANTS ─────────────────────────────────────────────────────────────────
-const fadeUp = {
+const fadeUp: any = {
   hidden: { opacity: 0, y: 24 },
   show: { opacity: 1, y: 0, transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] } },
 };
-const stagger = { show: { transition: { staggerChildren: 0.09 } } };
+const stagger: any = { show: { transition: { staggerChildren: 0.09 } } };
 
 // ─── PREMIUM NAVBAR ───────────────────────────────────────────────────────────
 function Navbar() {
@@ -893,7 +893,7 @@ export default function LandingPage() {
           </motion.div>
 
           <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 1 }}>
-            {features.map((f, i) => (
+            {features.map((f) => (
               <motion.div key={f.title} variants={fadeUp} style={{
                 background: "var(--surface-raised)",
                 border: "1px solid var(--border)",

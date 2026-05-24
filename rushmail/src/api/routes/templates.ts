@@ -1,8 +1,8 @@
 import { Hono } from "hono";
-import { db } from "../database/index";
-import * as schema from "../database/schema";
+import { db } from '../database/index.js';
+import * as schema from '../database/schema.js';
 import { eq, desc, or } from "drizzle-orm";
-import { requireAuth, authMiddleware } from "../middleware/auth";
+import { requireAuth, authMiddleware } from '../middleware/auth.js';
 import { randomUUID } from "crypto";
 
 const DEFAULT_TEMPLATES = [

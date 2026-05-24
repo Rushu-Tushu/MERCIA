@@ -1,6 +1,6 @@
 import { sqliteTable, text, integer, real } from "drizzle-orm/sqlite-core";
 
-export * from "./auth-schema";
+export * from './auth-schema.js';
 
 // ─── Emails ───────────────────────────────────────────────────────────────────
 export const emails = sqliteTable("emails", {
