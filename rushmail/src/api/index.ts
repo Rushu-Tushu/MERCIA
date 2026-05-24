@@ -25,4 +25,15 @@ const app = new Hono()
   .route("/connected-accounts", connectedAccountsRouter);
 
 export type AppType = typeof app;
+app.get("/debug", (c) => {
+  const url = process.env.DATABASE_URL || "MISSING";
+  return c.json({
+    hasUrl: !!process.env.DATABASE_URL,
+    urlPrefix: url.substring(0, 15) + "...",
+    env: process.env.NODE_ENV,
+    betterAuthUrl: process.env.BETTER_AUTH_URL,
+    websiteUrl: process.env.WEBSITE_URL
+  });
+});
+
 export default app;
