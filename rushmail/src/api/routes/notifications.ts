@@ -1,5 +1,5 @@
 import { Hono } from "hono";
-import { db } from "../database";
+import { db } from "../database/index";
 import * as schema from "../database/schema";
 import { eq, desc, and } from "drizzle-orm";
 import { requireAuth, authMiddleware } from "../middleware/auth";

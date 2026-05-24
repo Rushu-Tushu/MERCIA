@@ -1,5 +1,5 @@
 import { handle } from "hono/vercel";
-import app from "../src/api";
+import app from "../src/api/index";
 
 export default (req: any, res: any) => {
   const matchedPath = req.headers["x-matched-path"];
