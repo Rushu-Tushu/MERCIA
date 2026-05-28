@@ -3,11 +3,13 @@ import { EmailProvidersSection } from "../components/email-providers-section";
 import { NumberTicker } from "../components/ui/number-ticker";
 import { BentoGrid, BentoCard } from "../components/ui/bento-grid";
 import { AuroraText } from "../components/ui/aurora-text";
+import TestimonialsSection from "../components/ui/TestimonialsSection";
+import MerciaPricingSection from "../components/ui/MerciaPricingSection";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "wouter";
 import {
   BarChart3, Mail, Shield, Clock, Eye, MousePointer,
-  FileText, Star, ArrowRight, Check, Menu, X, Bell, TrendingUp,
+  FileText, ArrowRight, Check, Menu, X, Bell, TrendingUp,
   Activity, Users
 } from "lucide-react";
 
@@ -552,66 +554,7 @@ const bentoFeatures = [
   },
 ];
 
-const testimonials = [
-  {
-    name: "Priya Sharma",
-    role: "CS Student, IIT Delhi",
-    text: "Merica helped me land 3 interviews in a week. I knew exactly which companies were interested.",
-  },
-  {
-    name: "Alex Rivera",
-    role: "Freelance Designer",
-    text: "I can finally see if my portfolio is being visited. Game-changer for cold outreach.",
-  },
-  {
-    name: "Jordan Lee",
-    role: "Software Engineer",
-    text: "The engagement score feature is brilliant. I stopped wasting time following up with cold leads.",
-  },
-];
-
-const pricingPlans = [
-  {
-    name: "Free",
-    price: "$0",
-    period: "forever",
-    features: ["25 emails/month", "Basic open tracking", "3 templates", "7-day history"],
-    cta: "Get Started Free",
-    highlight: false,
-  },
-  {
-    name: "Pro",
-    price: "$9",
-    period: "/month",
-    features: [
-      "Unlimited emails",
-      "Full analytics suite",
-      "Resume & portfolio tracking",
-      "Realtime notifications",
-      "Ghosting detection",
-      "Engagement scoring",
-      "Unlimited templates",
-      "30-day history",
-    ],
-    cta: "Start Pro Trial",
-    highlight: true,
-  },
-  {
-    name: "Team",
-    price: "$29",
-    period: "/month",
-    features: [
-      "Everything in Pro",
-      "5 team members",
-      "Shared templates",
-      "Team analytics",
-      "Priority support",
-      "90-day history",
-    ],
-    cta: "Contact Sales",
-    highlight: false,
-  },
-];
+const testimonials = [];
 
 const faqs = [
   {
@@ -660,12 +603,29 @@ export default function LandingPage() {
         >
           {/* Pill badge */}
           <motion.div variants={fadeUp} style={{
-            display: "inline-flex", alignItems: "center", gap: 7,
-            background: ORANGE_DIM, border: `1px solid ${ORANGE_BORDER}`,
-            padding: "5px 14px", borderRadius: 100, marginBottom: 28,
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "8px",
+            background: "rgba(255,77,0,0.12)",
+            border: "1px solid rgba(255,77,0,0.25)",
+            borderRadius: "100px",
+            padding: "6px 16px",
+            marginBottom: "28px",
           }}>
-            <div style={{ width: 5, height: 5, borderRadius: "50%", background: ORANGE }} />
-            <span style={{ fontSize: 12.5, color: ORANGE, fontWeight: 500, letterSpacing: "-0.01em" }}>
+            <div style={{
+              width: "6px",
+              height: "6px",
+              borderRadius: "50%",
+              background: "#ff4d00",
+              boxShadow: "0 0 8px #ff4d00",
+            }} />
+            <span style={{
+              color: "#ff7300",
+              fontSize: "12px",
+              fontWeight: 600,
+              letterSpacing: "0.08em",
+              textTransform: "uppercase",
+            }}>
               Real-time recruiter engagement tracking
             </span>
           </motion.div>
@@ -955,138 +915,10 @@ export default function LandingPage() {
       </section>
 
       {/* ── TESTIMONIALS ──────────────────────────────────────────────────── */}
-      <section id="analytics" style={{ padding: "80px 24px", background: "var(--surface)" }}>
-        <motion.div
-          initial="hidden" whileInView="show" viewport={{ once: true }}
-          variants={stagger}
-          style={{ maxWidth: 1000, margin: "0 auto" }}
-        >
-          <motion.div variants={fadeUp} style={{ textAlign: "center", marginBottom: 52 }}>
-            <div style={{
-              fontSize: 11, fontWeight: 600, letterSpacing: "0.08em",
-              color: ORANGE, textTransform: "uppercase", marginBottom: 12,
-            }}>Testimonials</div>
-            <h2 style={{
-              fontSize: "clamp(26px, 4vw, 36px)", fontWeight: 700,
-              letterSpacing: "-0.03em", color: "var(--text)",
-            }}>
-              Loved by job seekers & freelancers.
-            </h2>
-          </motion.div>
-
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
-            {testimonials.map(t => (
-              <motion.div key={t.name} variants={fadeUp} style={{
-                background: "var(--surface-raised)", border: "1px solid var(--border)",
-                borderRadius: 10, padding: "24px",
-              }}>
-                <div style={{ display: "flex", gap: 3, marginBottom: 14 }}>
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <Star key={i} size={12} color="#eab308" fill="#eab308" />
-                  ))}
-                </div>
-                <p style={{
-                  fontSize: 14, color: "var(--text-secondary)", lineHeight: 1.7,
-                  margin: "0 0 20px", letterSpacing: "-0.01em",
-                }}>"{t.text}"</p>
-                <div>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: "var(--text)", letterSpacing: "-0.01em" }}>{t.name}</div>
-                  <div style={{ fontSize: 12, color: "var(--text-tertiary)", marginTop: 2 }}>{t.role}</div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
-      </section>
+      <TestimonialsSection />
 
       {/* ── PRICING ───────────────────────────────────────────────────────── */}
-      <section id="pricing" style={{ padding: "80px 24px" }}>
-        <motion.div
-          initial="hidden" whileInView="show" viewport={{ once: true }}
-          variants={stagger}
-          style={{ maxWidth: 960, margin: "0 auto" }}
-        >
-          <motion.div variants={fadeUp} style={{ textAlign: "center", marginBottom: 52 }}>
-            <div style={{
-              fontSize: 11, fontWeight: 600, letterSpacing: "0.08em",
-              color: ORANGE, textTransform: "uppercase", marginBottom: 12,
-            }}>Pricing</div>
-            <h2 style={{
-              fontSize: "clamp(26px, 4vw, 36px)", fontWeight: 700,
-              letterSpacing: "-0.03em", color: "var(--text)", marginBottom: 10,
-            }}>Simple, transparent pricing.</h2>
-            <p style={{ fontSize: 14, color: "var(--text-secondary)", letterSpacing: "-0.01em" }}>
-              Start free. Upgrade when you're ready.
-            </p>
-          </motion.div>
-
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
-            {pricingPlans.map(plan => (
-              <motion.div key={plan.name} variants={fadeUp} style={{
-                background: plan.highlight ? "var(--surface-overlay)" : "var(--surface-raised)",
-                border: plan.highlight ? `1px solid ${ORANGE_BORDER}` : "1px solid var(--border)",
-                borderRadius: 10, padding: 24, position: "relative",
-              }}>
-                {plan.highlight && (
-                  <div style={{
-                    position: "absolute", top: -10, left: "50%", transform: "translateX(-50%)",
-                    background: ORANGE, color: "white",
-                    padding: "3px 12px", borderRadius: 100,
-                    fontSize: 11, fontWeight: 600, letterSpacing: "0.01em",
-                    whiteSpace: "nowrap",
-                  }}>Most Popular</div>
-                )}
-                <div style={{ marginBottom: 20 }}>
-                  <div style={{
-                    fontSize: 12, fontWeight: 600, color: "var(--text-secondary)",
-                    marginBottom: 10, letterSpacing: "0.02em", textTransform: "uppercase",
-                  }}>{plan.name}</div>
-                  <div style={{ display: "flex", alignItems: "flex-end", gap: 3 }}>
-                    <span style={{
-                      fontSize: 36, fontWeight: 700, color: "var(--text)",
-                      letterSpacing: "-0.04em", lineHeight: 1,
-                    }}>{plan.price}</span>
-                    <span style={{
-                      fontSize: 13, color: "var(--text-secondary)",
-                      paddingBottom: 4, letterSpacing: "-0.01em",
-                    }}>{plan.period}</span>
-                  </div>
-                </div>
-                <div style={{ marginBottom: 24 }}>
-                  {plan.features.map(f => (
-                    <div key={f} style={{
-                      display: "flex", gap: 9, alignItems: "flex-start",
-                      marginBottom: 8,
-                    }}>
-                      <Check size={13} color="#22c55e" style={{ flexShrink: 0, marginTop: 1 }} />
-                      <span style={{
-                        fontSize: 13, color: "var(--text-secondary)",
-                        letterSpacing: "-0.01em",
-                      }}>{f}</span>
-                    </div>
-                  ))}
-                </div>
-                <Link to="/sign-up">
-                  <div style={{
-                    background: plan.highlight ? ORANGE : "rgba(255,255,255,0.05)",
-                    border: plan.highlight ? "none" : "1px solid var(--border)",
-                    color: "white", padding: "10px",
-                    borderRadius: 8, textAlign: "center",
-                    fontSize: 13.5, fontWeight: 550, cursor: "pointer",
-                    letterSpacing: "-0.01em",
-                    transition: "opacity 0.15s",
-                  }}
-                    onMouseEnter={e => e.currentTarget.style.opacity = "0.85"}
-                    onMouseLeave={e => e.currentTarget.style.opacity = "1"}
-                  >
-                    {plan.cta}
-                  </div>
-                </Link>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
-      </section>
+      <MerciaPricingSection />
 
       {/* ── FAQ ───────────────────────────────────────────────────────────── */}
       <section id="faq" style={{ padding: "80px 24px", background: "var(--surface)" }}>
