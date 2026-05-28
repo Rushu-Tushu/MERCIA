@@ -910,7 +910,7 @@ export default function LandingPage() {
 
       {/* ── CTA ───────────────────────────────────────────────────────────── */}
       <section style={{ padding: "120px 24px", background: "#000000", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
-        <p style={{ fontSize: "16px", color: "rgba(255,255,255,0.6)", marginBottom: "16px", letterSpacing: "0.04em", textTransform: "uppercase", fontWeight: 500 }}>
+        <p style={{ fontSize: "16px", color: "rgba(255,255,255,0.6)", marginBottom: "16px", letterSpacing: "0.04em", fontWeight: 500 }}>
           make coldmailing simple with
         </p>
         <Text3DFlip
@@ -947,7 +947,7 @@ export default function LandingPage() {
                 Built for the relentless job seeker. Track your cold emails, measure performance, and get more interviews.
               </p>
             </div>
-            
+
             <div style={{ display: "flex", gap: 64, flexWrap: "wrap" }}>
               <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
                 <h4 style={{ color: "#fff", fontSize: 14, fontWeight: 600 }}>Legal</h4>
@@ -964,7 +964,7 @@ export default function LandingPage() {
               </div>
             </div>
           </div>
-          
+
           <div style={{
             borderTop: "1px solid rgba(255,255,255,0.08)",
             paddingTop: 24,
