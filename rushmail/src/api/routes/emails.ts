@@ -60,7 +60,7 @@ async function sendViaGmail(
   opts: { from: string; to: string | string[]; subject: string; html: string }
 ) {
   const toAddresses = Array.isArray(opts.to) ? opts.to : [opts.to];
-  const boundary = "coldpulse_" + randomUUID().replace(/-/g, "");
+  const boundary = "mercia_" + randomUUID().replace(/-/g, "");
   const mime = [
     `MIME-Version: 1.0`,
     `To: ${toAddresses.join(", ")}`,
@@ -219,7 +219,7 @@ export const emailsRouter = new Hono()
 
     try {
       await sendViaGmail(gmailToken, {
-        from: `${user.name || "ColdPulse"} <${senderEmail}>`,
+        from: `${user.name || "Merica"} <${senderEmail}>`,
         to,
         subject,
         html: trackedHtml,

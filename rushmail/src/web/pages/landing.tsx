@@ -67,12 +67,12 @@ function Navbar() {
               flexShrink: 0,
               filter: "drop-shadow(0 0 6px rgba(255,77,0,0.55))",
             }}>
-              <img src="/logo.svg" alt="ColdPulse" style={{ width: 20, height: 20, filter: "brightness(0) saturate(100%) invert(35%) sepia(96%) saturate(2000%) hue-rotate(5deg) brightness(105%)" }} />
+              <img src="/logo.svg" alt="Merica" style={{ width: 20, height: 20, filter: "brightness(0) saturate(100%) invert(35%) sepia(96%) saturate(2000%) hue-rotate(5deg) brightness(105%)" }} />
             </div>
             <span style={{
               fontWeight: 600, fontSize: 15, color: "var(--text)",
               letterSpacing: "-0.02em",
-            }}>ColdPulse</span>
+            }}>Merica</span>
           </div>
 
           {/* Desktop nav */}
@@ -245,9 +245,9 @@ function DashboardPreview() {
             display: "flex", alignItems: "center", justifyContent: "center",
             filter: "drop-shadow(0 0 5px rgba(255,77,0,0.5))",
           }}>
-            <img src="/logo.svg" alt="ColdPulse" style={{ width: 18, height: 18, filter: "brightness(0) saturate(100%) invert(35%) sepia(96%) saturate(2000%) hue-rotate(5deg) brightness(105%)" }} />
+            <img src="/logo.svg" alt="Merica" style={{ width: 18, height: 18, filter: "brightness(0) saturate(100%) invert(35%) sepia(96%) saturate(2000%) hue-rotate(5deg) brightness(105%)" }} />
           </div>
-          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: "-0.02em" }}>ColdPulse</span>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: "-0.02em" }}>Merica</span>
         </div>
 
         {/* Nav items */}
@@ -543,7 +543,7 @@ const bentoFeatures = [
   },
   {
     name: "Engagement Scoring",
-    description: "ColdPulse calculates a real score so you know who's Hot, Warm, or Cold instantly.",
+    description: "Merica calculates a real score so you know who's Hot, Warm, or Cold instantly.",
     Icon: BarChart3,
     className: "lg:col-span-2",
     background: <div style={{ height: 140, width: "100%", background: "transparent" }} />,
@@ -556,7 +556,7 @@ const testimonials = [
   {
     name: "Priya Sharma",
     role: "CS Student, IIT Delhi",
-    text: "ColdPulse helped me land 3 interviews in a week. I knew exactly which companies were interested.",
+    text: "Merica helped me land 3 interviews in a week. I knew exactly which companies were interested.",
   },
   {
     name: "Alex Rivera",
@@ -686,7 +686,7 @@ export default function LandingPage() {
             maxWidth: 480, margin: "0 auto 36px",
             letterSpacing: "-0.01em",
           }}>
-            ColdPulse gives you a real engagement score — so you know exactly
+            Merica gives you a real engagement score — so you know exactly
             who's interested and when to follow up.
           </motion.p>
 
@@ -773,7 +773,7 @@ export default function LandingPage() {
                 fontSize: 10, color: "rgba(255,255,255,0.2)",
                 margin: "0 auto",
               }}>
-                app.coldpulse.io/dashboard
+                app.Merica.io/dashboard
               </div>
             </div>
 
@@ -861,7 +861,7 @@ export default function LandingPage() {
               fontSize: 16, color: "var(--text-secondary)", maxWidth: 500,
               margin: "0 auto", lineHeight: 1.65, letterSpacing: "-0.01em",
             }}>
-              From the moment you hit send to the interview invite — ColdPulse tracks every step so you land the job faster.
+              From the moment you hit send to the interview invite — Merica tracks every step so you land the job faster.
             </p>
           </motion.div>
 
@@ -1158,7 +1158,7 @@ export default function LandingPage() {
                 }}
               >
                 <img src="/logo.svg" alt="" style={{ width: 16, height: 16, filter: "brightness(0) invert(1)", marginRight: 2 }} />
-                Get ColdPulse Free
+                Get Merica Free
               </motion.span>
             </Link>
           </motion.div>
@@ -1177,12 +1177,12 @@ export default function LandingPage() {
             display: "flex", alignItems: "center", justifyContent: "center",
             filter: "drop-shadow(0 0 5px rgba(255,77,0,0.5))",
           }}>
-            <img src="/logo.svg" alt="ColdPulse" style={{ width: 18, height: 18, filter: "brightness(0) saturate(100%) invert(35%) sepia(96%) saturate(2000%) hue-rotate(5deg) brightness(105%)" }} />
+            <img src="/logo.svg" alt="Merica" style={{ width: 18, height: 18, filter: "brightness(0) saturate(100%) invert(35%) sepia(96%) saturate(2000%) hue-rotate(5deg) brightness(105%)" }} />
           </div>
-          <span style={{ fontWeight: 600, fontSize: 14, color: "var(--text)", letterSpacing: "-0.02em" }}>ColdPulse</span>
+          <span style={{ fontWeight: 600, fontSize: 14, color: "var(--text)", letterSpacing: "-0.02em" }}>Merica</span>
         </div>
         <p style={{ color: "var(--text-tertiary)", fontSize: 12.5, margin: 0, letterSpacing: "-0.01em" }}>
-          © 2025 ColdPulse. Built for the relentless job seeker.
+          © 2025 Merica. Built for the relentless job seeker.
         </p>
       </footer>
 
