@@ -3,8 +3,10 @@ import { EmailProvidersSection } from "../components/email-providers-section";
 import { NumberTicker } from "../components/ui/number-ticker";
 import { BentoGrid, BentoCard } from "../components/ui/bento-grid";
 import { AuroraText } from "../components/ui/aurora-text";
+import { Text3DFlip } from "../components/ui/text-3d-flip";
 import TestimonialsSection from "../components/ui/TestimonialsSection";
 import MerciaPricingSection from "../components/ui/MerciaPricingSection";
+import FaqSection from "../components/ui/FaqSection";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "wouter";
 import {
@@ -556,24 +558,7 @@ const bentoFeatures = [
 
 const testimonials = [];
 
-const faqs = [
-  {
-    q: "Does the recipient know they're being tracked?",
-    a: "Open tracking uses an invisible 1x1 pixel — standard practice in email marketing and CRM tools. Link tracking uses redirect URLs.",
-  },
-  {
-    q: "How accurate is the open tracking?",
-    a: "Very accurate for most email clients. Some clients (Apple Mail Privacy Protection) may show phantom opens — we flag these.",
-  },
-  {
-    q: "Can I use my own email to send?",
-    a: "Yes. Connect your SMTP or use our built-in sending via Resend. Your emails come from your address.",
-  },
-  {
-    q: "Is my data secure?",
-    a: "All data is stored in encrypted databases. We never sell your data. You can delete your account anytime.",
-  },
-];
+// FAQs removed and imported as FaqSection component
 
 // ─── MAIN PAGE ─────────────────────────────────────────────────────────────────
 export default function LandingPage() {
@@ -921,101 +906,79 @@ export default function LandingPage() {
       <MerciaPricingSection />
 
       {/* ── FAQ ───────────────────────────────────────────────────────────── */}
-      <section id="faq" style={{ padding: "80px 24px", background: "var(--surface)" }}>
-        <motion.div
-          initial="hidden" whileInView="show" viewport={{ once: true }}
-          variants={stagger}
-          style={{ maxWidth: 660, margin: "0 auto" }}
-        >
-          <motion.div variants={fadeUp} style={{ textAlign: "center", marginBottom: 48 }}>
-            <div style={{
-              fontSize: 11, fontWeight: 600, letterSpacing: "0.08em",
-              color: ORANGE, textTransform: "uppercase", marginBottom: 12,
-            }}>FAQ</div>
-            <h2 style={{
-              fontSize: "clamp(24px, 3vw, 32px)", fontWeight: 700,
-              letterSpacing: "-0.03em", color: "var(--text)",
-            }}>Frequently asked questions.</h2>
-          </motion.div>
-
-          {faqs.map((faq, i) => (
-            <motion.div key={i} variants={fadeUp} style={{
-              borderBottom: "1px solid var(--border)",
-              paddingBottom: 20, marginBottom: 20,
-            }}>
-              <div style={{
-                fontSize: 14, fontWeight: 550, color: "var(--text)",
-                marginBottom: 8, letterSpacing: "-0.01em",
-              }}>{faq.q}</div>
-              <div style={{
-                fontSize: 13.5, color: "var(--text-secondary)",
-                lineHeight: 1.7, letterSpacing: "-0.01em",
-              }}>{faq.a}</div>
-            </motion.div>
-          ))}
-        </motion.div>
-      </section>
+      <FaqSection />
 
       {/* ── CTA ───────────────────────────────────────────────────────────── */}
-      <section style={{ padding: "100px 24px", textAlign: "center" }}>
-        <motion.div
-          initial="hidden" whileInView="show" viewport={{ once: true }}
-          variants={stagger}
-          style={{ maxWidth: 560, margin: "0 auto" }}
+      <section style={{ padding: "120px 24px", background: "#000000", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+        <p style={{ fontSize: "16px", color: "rgba(255,255,255,0.6)", marginBottom: "16px", letterSpacing: "0.04em", textTransform: "uppercase", fontWeight: 500 }}>
+          make coldmailing simple with
+        </p>
+        <Text3DFlip
+          className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-extrabold tracking-tighter"
+          textClassName="text-white"
+          flipTextClassName="text-[#FF4D00]"
+          rotateDirection="top"
+          staggerDuration={0.06}
         >
-          <motion.h2 variants={fadeUp} style={{
-            fontSize: "clamp(32px, 5vw, 52px)", fontWeight: 700,
-            letterSpacing: "-0.04em", color: "var(--text)", marginBottom: 14, lineHeight: 1.1,
-          }}>
-            Start tracking today.
-          </motion.h2>
-          <motion.p variants={fadeUp} style={{
-            fontSize: 15, color: "var(--text-secondary)", marginBottom: 36,
-            letterSpacing: "-0.01em",
-          }}>
-            Free forever. No credit card required.
-          </motion.p>
-          <motion.div variants={fadeUp}>
-            <Link to="/sign-up">
-              <motion.span
-                whileHover={{ opacity: 0.88 }}
-                whileTap={{ scale: 0.97 }}
-                style={{
-                  display: "inline-flex", alignItems: "center", gap: 8,
-                  background: ORANGE, color: "white",
-                  padding: "12px 28px", borderRadius: 9,
-                  fontSize: 15, fontWeight: 600, cursor: "pointer",
-                  letterSpacing: "-0.02em",
-                  boxShadow: "0 4px 16px rgba(255,77,0,0.3)",
-                }}
-              >
-                <img src="/logo.svg" alt="" style={{ width: 16, height: 16, filter: "brightness(0) invert(1)", marginRight: 2 }} />
-                Get Merica Free
-              </motion.span>
-            </Link>
-          </motion.div>
-        </motion.div>
+          MERCIA
+        </Text3DFlip>
       </section>
 
       {/* ── FOOTER ────────────────────────────────────────────────────────── */}
       <footer style={{
-        borderTop: "1px solid var(--border)", padding: "24px 32px",
-        display: "flex", justifyContent: "space-between", alignItems: "center",
-        flexWrap: "wrap", gap: 12,
+        background: "#000000",
+        borderTop: "1px solid rgba(255,255,255,0.08)",
+        padding: "60px 32px 40px",
       }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <div style={{
-            width: 22, height: 22, borderRadius: 5,
-            display: "flex", alignItems: "center", justifyContent: "center",
-            filter: "drop-shadow(0 0 5px rgba(255,77,0,0.5))",
-          }}>
-            <img src="/logo.svg" alt="Merica" style={{ width: 18, height: 18, filter: "brightness(0) saturate(100%) invert(35%) sepia(96%) saturate(2000%) hue-rotate(5deg) brightness(105%)" }} />
+        <div style={{ maxWidth: 1200, margin: "0 auto", display: "flex", flexDirection: "column", gap: 40 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 32 }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <div style={{
+                  width: 24, height: 24, borderRadius: 6,
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  filter: "drop-shadow(0 0 8px rgba(255,77,0,0.6))",
+                }}>
+                  <img src="/logo.svg" alt="Merica" style={{ width: 20, height: 20, filter: "brightness(0) saturate(100%) invert(35%) sepia(96%) saturate(2000%) hue-rotate(5deg) brightness(105%)" }} />
+                </div>
+                <span style={{ fontWeight: 700, fontSize: 18, color: "#fff", letterSpacing: "-0.02em" }}>Mercia</span>
+              </div>
+              <p style={{ color: "rgba(255,255,255,0.6)", fontSize: 14, maxWidth: 280, lineHeight: 1.6 }}>
+                Built for the relentless job seeker. Track your cold emails, measure performance, and get more interviews.
+              </p>
+            </div>
+            
+            <div style={{ display: "flex", gap: 64, flexWrap: "wrap" }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                <h4 style={{ color: "#fff", fontSize: 14, fontWeight: 600 }}>Legal</h4>
+                <Link to="/termsandcondition">
+                  <span style={{ color: "rgba(255,255,255,0.6)", fontSize: 14, cursor: "pointer", transition: "color 0.2s" }} onMouseEnter={e => e.currentTarget.style.color = "#fff"} onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,0.6)"}>
+                    Terms & Conditions
+                  </span>
+                </Link>
+                <Link to="/privacy">
+                  <span style={{ color: "rgba(255,255,255,0.6)", fontSize: 14, cursor: "pointer", transition: "color 0.2s" }} onMouseEnter={e => e.currentTarget.style.color = "#fff"} onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,0.6)"}>
+                    Privacy Policy
+                  </span>
+                </Link>
+              </div>
+            </div>
           </div>
-          <span style={{ fontWeight: 600, fontSize: 14, color: "var(--text)", letterSpacing: "-0.02em" }}>Merica</span>
+          
+          <div style={{
+            borderTop: "1px solid rgba(255,255,255,0.08)",
+            paddingTop: 24,
+            display: "flex", justifyContent: "space-between", alignItems: "center",
+            flexWrap: "wrap", gap: 16
+          }}>
+            <p style={{ color: "rgba(255,255,255,0.5)", fontSize: 13, margin: 0 }}>
+              © 2026 Mercia. All rights reserved.
+            </p>
+            <p style={{ color: "rgba(255,255,255,0.5)", fontSize: 13, margin: 0 }}>
+              Made by <a href="#" style={{ color: "#FF4D00", textDecoration: "none" }}>Rushu-Tushu</a>
+            </p>
+          </div>
         </div>
-        <p style={{ color: "var(--text-tertiary)", fontSize: 12.5, margin: 0, letterSpacing: "-0.01em" }}>
-          © 2025 Merica. Built for the relentless job seeker.
-        </p>
       </footer>
 
       {/* Responsive overrides */}

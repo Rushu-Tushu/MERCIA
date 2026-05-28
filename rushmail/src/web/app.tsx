@@ -14,6 +14,8 @@ import Templates from "./pages/templates";
 import Resume from "./pages/resume";
 import Notifications from "./pages/notifications";
 import Settings from "./pages/settings";
+import TermsAndConditions from "./pages/terms-and-conditions";
+import PrivacyPolicy from "./pages/privacy-policy";
 
 function ProtectedRoute({ component: Component }: { component: React.ComponentType }) {
   const { data: session, isPending } = authClient.useSession();
@@ -49,6 +51,8 @@ function App() {
         <Route path="/" component={LandingPage} />
         <Route path="/sign-in" component={SignInPage} />
         <Route path="/sign-up" component={SignUpPage} />
+        <Route path="/termsandcondition" component={TermsAndConditions} />
+        <Route path="/privacy" component={PrivacyPolicy} />
 
         {/* Protected */}
         <Route path="/dashboard">
