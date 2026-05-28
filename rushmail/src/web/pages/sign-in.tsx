@@ -1,113 +1,9 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { authClient } from "../lib/auth";
-import { AlertCircle, BarChart3, Mail, TrendingUp } from "lucide-react";
-
-const ORANGE = "#FF4D00";
-
-function LeftPanel() {
-  return (
-    <div style={{
-      flex: 1,
-      background: "#0a0a0d",
-      borderRight: "1px solid rgba(255,255,255,0.06)",
-      display: "flex",
-      flexDirection: "column",
-      justifyContent: "space-between",
-      padding: "40px 44px",
-      position: "relative",
-      overflow: "hidden",
-    }}>
-      <div style={{
-        position: "absolute", top: -80, left: -80,
-        width: 500, height: 500, borderRadius: "50%",
-        background: "radial-gradient(circle, rgba(255,77,0,0.06) 0%, transparent 65%)",
-        pointerEvents: "none",
-      }} />
-
-      {/* Logo */}
-      <div style={{ display: "flex", alignItems: "center", gap: 8, position: "relative" }}>
-        <div style={{
-          width: 26, height: 26, borderRadius: 6,
-          display: "flex", alignItems: "center", justifyContent: "center",
-          filter: "drop-shadow(0 0 6px rgba(255,77,0,0.55))",
-        }}>
-          <img src="/logo.svg" alt="Merica" style={{ width: 22, height: 22, filter: "brightness(0) saturate(100%) invert(35%) sepia(96%) saturate(2000%) hue-rotate(5deg) brightness(105%)" }} />
-        </div>
-        <span style={{ fontWeight: 600, fontSize: 15, color: "#fafafa", letterSpacing: "-0.02em" }}>Merica</span>
-      </div>
-
-      {/* Headline */}
-      <div style={{ position: "relative" }}>
-        <div style={{
-          fontSize: 11, fontWeight: 600, letterSpacing: "0.08em",
-          color: ORANGE, textTransform: "uppercase", marginBottom: 14,
-        }}>Cold Outreach Intelligence</div>
-        <h2 style={{
-          fontSize: 26, fontWeight: 700, letterSpacing: "-0.035em",
-          color: "#fafafa", lineHeight: 1.25, margin: "0 0 14px",
-        }}>
-          Know exactly when<br />recruiters engage.
-        </h2>
-        <p style={{
-          fontSize: 13.5, color: "rgba(255,255,255,0.45)",
-          lineHeight: 1.65, letterSpacing: "-0.01em", margin: 0, maxWidth: 320,
-        }}>
-          Send tracked cold emails directly from your Gmail. Real-time opens, clicks, and engagement scoring.
-        </p>
-
-        <div style={{ display: "flex", gap: 10, marginTop: 28 }}>
-          {[
-            { icon: Mail, label: "247 emails", sub: "tracked" },
-            { icon: TrendingUp, label: "74.1%", sub: "open rate" },
-            { icon: BarChart3, label: "Score 94", sub: "top lead" },
-          ].map(({ icon: Icon, label, sub }) => (
-            <div key={label} style={{
-              flex: 1,
-              background: "#141418",
-              border: "1px solid rgba(255,255,255,0.07)",
-              borderRadius: 8, padding: "10px 12px",
-            }}>
-              <Icon size={12} color="rgba(255,255,255,0.3)" style={{ marginBottom: 6 }} />
-              <div style={{ fontSize: 13, fontWeight: 600, color: "#fafafa", letterSpacing: "-0.02em" }}>{label}</div>
-              <div style={{ fontSize: 10.5, color: "rgba(255,255,255,0.3)", marginTop: 2 }}>{sub}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Activity feed */}
-      <div style={{
-        background: "#141418",
-        border: "1px solid rgba(255,255,255,0.07)",
-        borderRadius: 9, padding: "14px 16px",
-        position: "relative",
-      }}>
-        <div style={{ fontSize: 11, fontWeight: 500, color: "rgba(255,255,255,0.5)", marginBottom: 11 }}>
-          Recent activity
-        </div>
-        {[
-          { dot: ORANGE, text: "Stripe opened your email", time: "2m ago" },
-          { dot: "#22c55e", text: "Vercel viewed resume · 42s", time: "18m ago" },
-          { dot: "#FF4D00", text: "Linear clicked portfolio link", time: "1h ago" },
-          { dot: "rgba(255,255,255,0.15)", text: "Notion — no activity", time: "2d ago" },
-        ].map((item, i, arr) => (
-          <div key={i} style={{
-            display: "flex", alignItems: "center", justifyContent: "space-between",
-            padding: "6px 0",
-            borderBottom: i < arr.length - 1 ? "1px solid rgba(255,255,255,0.04)" : "none",
-          }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
-              <div style={{ width: 5, height: 5, borderRadius: "50%", background: item.dot, flexShrink: 0 }} />
-              <span style={{ fontSize: 11.5, color: "rgba(255,255,255,0.55)" }}>{item.text}</span>
-            </div>
-            <span style={{ fontSize: 10, color: "rgba(255,255,255,0.2)", flexShrink: 0, marginLeft: 12 }}>{item.time}</span>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
+import { AuthSlider } from "../components/ui/auth-slider";
+import { BorderBeam } from "../components/ui/border-beam";
+import { AlertCircle } from "lucide-react";
 
 export default function SignInPage() {
   const [loading, setLoading] = useState(false);
@@ -135,18 +31,20 @@ export default function SignInPage() {
       fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
     }}>
       <div className="auth-left-panel" style={{ flex: 1 }}>
-        <LeftPanel />
+        <AuthSlider />
       </div>
 
       <div style={{
-        width: 460,
-        flexShrink: 0,
+        flex: 1,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         padding: "32px 40px",
         background: "#09090b",
+        position: "relative",
+        overflow: "hidden",
       }}>
+        <BorderBeam size={300} duration={8} delay={0} borderWidth={1.5} />
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
@@ -156,7 +54,7 @@ export default function SignInPage() {
           {/* Mobile logo */}
           <div className="auth-mobile-logo" style={{ display: "none", marginBottom: 32, alignItems: "center", gap: 8 }}>
             <div style={{ width: 24, height: 24, borderRadius: 5, display: "flex", alignItems: "center", justifyContent: "center", filter: "drop-shadow(0 0 5px rgba(255,77,0,0.5))" }}>
-              <img src="/logo.svg" alt="Merica" style={{ width: 20, height: 20, filter: "brightness(0) saturate(100%) invert(35%) sepia(96%) saturate(2000%) hue-rotate(5deg) brightness(105%)" }} />
+              <img src="/Mercia.png" alt="Merica" style={{ width: 20, height: 20, objectFit: "contain" }} />
             </div>
             <span style={{ fontWeight: 600, fontSize: 14, color: "#fafafa", letterSpacing: "-0.02em" }}>Merica</span>
           </div>
@@ -237,7 +135,7 @@ export default function SignInPage() {
             border: "1px solid rgba(255,77,0,0.12)",
             borderRadius: 8,
           }}>
-            <div style={{ fontSize: 11, fontWeight: 600, color: ORANGE, marginBottom: 6, letterSpacing: "0.02em", textTransform: "uppercase" }}>
+            <div style={{ fontSize: 11, fontWeight: 600, color: "#FF4D00", marginBottom: 6, letterSpacing: "0.02em", textTransform: "uppercase" }}>
               Why Google?
             </div>
             <p style={{ fontSize: 12.5, color: "rgba(255,255,255,0.4)", margin: 0, lineHeight: 1.6 }}>

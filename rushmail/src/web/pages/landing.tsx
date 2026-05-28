@@ -69,9 +69,9 @@ function Navbar() {
               width: 26, height: 26, borderRadius: 6,
               display: "flex", alignItems: "center", justifyContent: "center",
               flexShrink: 0,
-              filter: "drop-shadow(0 0 6px rgba(255,77,0,0.55))",
+
             }}>
-              <img src="/logo.svg" alt="Merica" style={{ width: 20, height: 20, filter: "brightness(0) saturate(100%) invert(35%) sepia(96%) saturate(2000%) hue-rotate(5deg) brightness(105%)" }} />
+              <img src="/Mercia.png" alt="Merica" style={{ width: 26, height: 26, objectFit: "contain" }} />
             </div>
             <span style={{
               fontWeight: 600, fontSize: 15, color: "var(--text)",
@@ -249,7 +249,7 @@ function DashboardPreview() {
             display: "flex", alignItems: "center", justifyContent: "center",
             filter: "drop-shadow(0 0 5px rgba(255,77,0,0.5))",
           }}>
-            <img src="/logo.svg" alt="Merica" style={{ width: 18, height: 18, filter: "brightness(0) saturate(100%) invert(35%) sepia(96%) saturate(2000%) hue-rotate(5deg) brightness(105%)" }} />
+            <img src="/Mercia.png" alt="Merica" style={{ width: 18, height: 18, objectFit: "contain" }} />
           </div>
           <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: "-0.02em" }}>Merica</span>
         </div>
@@ -937,9 +937,9 @@ export default function LandingPage() {
                 <div style={{
                   width: 24, height: 24, borderRadius: 6,
                   display: "flex", alignItems: "center", justifyContent: "center",
-                  filter: "drop-shadow(0 0 8px rgba(255,77,0,0.6))",
+
                 }}>
-                  <img src="/logo.svg" alt="Merica" style={{ width: 20, height: 20, filter: "brightness(0) saturate(100%) invert(35%) sepia(96%) saturate(2000%) hue-rotate(5deg) brightness(105%)" }} />
+                  <img src="/Mercia.png" alt="Merica" style={{ width: 24, height: 24, objectFit: "contain" }} />
                 </div>
                 <span style={{ fontWeight: 700, fontSize: 18, color: "#fff", letterSpacing: "-0.02em" }}>Mercia</span>
               </div>

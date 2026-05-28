@@ -113,7 +113,7 @@ export function Sidebar() {
             flexShrink: 0,
             filter: "drop-shadow(0 0 6px rgba(255,77,0,0.55))",
           }}>
-            <img src="/logo.svg" alt="Merica" style={{ width: 22, height: 22, filter: "brightness(0) invert(1)" }} />
+            <img src="/Mercia.png" alt="Merica" style={{ width: 22, height: 22, objectFit: "contain" }} />
           </div>
           {!collapsed && (
             <span style={{

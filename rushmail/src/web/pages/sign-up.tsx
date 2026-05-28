@@ -1,101 +1,9 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { authClient } from "../lib/auth";
-import { AlertCircle, Check, Eye as EyeIcon, MousePointer, FileText } from "lucide-react";
-
-const ORANGE = "#FF4D00";
-
-function LeftPanel() {
-  const features = [
-    { icon: EyeIcon, title: "Real-time open tracking", desc: "Know the exact second a recruiter opens your email." },
-    { icon: MousePointer, title: "Link & click analytics", desc: "Track every click on links and portfolio pages." },
-    { icon: FileText, title: "Resume view tracking", desc: "See when your resume is viewed and for how long." },
-  ];
-
-  return (
-    <div style={{
-      flex: 1,
-      background: "#0a0a0d",
-      borderRight: "1px solid rgba(255,255,255,0.06)",
-      display: "flex",
-      flexDirection: "column",
-      justifyContent: "space-between",
-      padding: "40px 44px",
-      position: "relative",
-      overflow: "hidden",
-    }}>
-      <div style={{
-        position: "absolute", bottom: -100, right: -100,
-        width: 500, height: 500, borderRadius: "50%",
-        background: "radial-gradient(circle, rgba(255,77,0,0.05) 0%, transparent 65%)",
-        pointerEvents: "none",
-      }} />
-
-      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-        <div style={{ width: 26, height: 26, borderRadius: 6, display: "flex", alignItems: "center", justifyContent: "center", filter: "drop-shadow(0 0 6px rgba(255,77,0,0.55))" }}>
-          <img src="/logo.svg" alt="Merica" style={{ width: 22, height: 22, filter: "brightness(0) saturate(100%) invert(35%) sepia(96%) saturate(2000%) hue-rotate(5deg) brightness(105%)" }} />
-        </div>
-        <span style={{ fontWeight: 600, fontSize: 15, color: "#fafafa", letterSpacing: "-0.02em" }}>Merica</span>
-      </div>
-
-      <div style={{ position: "relative" }}>
-        <div style={{
-          fontSize: 11, fontWeight: 600, letterSpacing: "0.08em",
-          color: ORANGE, textTransform: "uppercase", marginBottom: 14,
-        }}>Free to get started</div>
-        <h2 style={{
-          fontSize: 26, fontWeight: 700, letterSpacing: "-0.035em",
-          color: "#fafafa", lineHeight: 1.25, margin: "0 0 14px",
-        }}>
-          Track every recruiter<br />interaction in realtime.
-        </h2>
-        <p style={{
-          fontSize: 13.5, color: "rgba(255,255,255,0.4)",
-          lineHeight: 1.65, letterSpacing: "-0.01em", margin: "0 0 28px", maxWidth: 320,
-        }}>
-          Send tracked cold emails straight from your Gmail. Know who's interested before you follow up.
-        </p>
-
-        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-          {features.map(({ icon: Icon, title, desc }) => (
-            <div key={title} style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
-              <div style={{
-                width: 30, height: 30, borderRadius: 7, flexShrink: 0,
-                background: "#141418", border: "1px solid rgba(255,255,255,0.07)",
-                display: "flex", alignItems: "center", justifyContent: "center",
-                marginTop: 1,
-              }}>
-                <Icon size={13} color="rgba(255,255,255,0.4)" />
-              </div>
-              <div>
-                <div style={{ fontSize: 13, fontWeight: 500, color: "rgba(255,255,255,0.75)", marginBottom: 2 }}>{title}</div>
-                <div style={{ fontSize: 12, color: "rgba(255,255,255,0.3)", lineHeight: 1.5 }}>{desc}</div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div style={{
-        background: "#141418",
-        border: "1px solid rgba(255,255,255,0.07)",
-        borderRadius: 9, padding: "14px 16px",
-      }}>
-        <div style={{ display: "flex", gap: 4, marginBottom: 8 }}>
-          {[...Array(5)].map((_, i) => (
-            <svg key={i} width="12" height="12" viewBox="0 0 12 12" fill="#eab308"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5" /></svg>
-          ))}
-        </div>
-        <p style={{ fontSize: 12.5, color: "rgba(255,255,255,0.5)", lineHeight: 1.6, margin: "0 0 10px" }}>
-          "Merica helped me land 3 interviews in a week. I knew exactly which companies were interested."
-        </p>
-        <div style={{ fontSize: 11.5, fontWeight: 500, color: "rgba(255,255,255,0.4)" }}>
-          Priya Sharma · CS Student, IIT Delhi
-        </div>
-      </div>
-    </div>
-  );
-}
+import { AuthSlider } from "../components/ui/auth-slider";
+import { BorderBeam } from "../components/ui/border-beam";
+import { AlertCircle, Check } from "lucide-react";
 
 export default function SignUpPage() {
   const [loading, setLoading] = useState(false);
@@ -123,19 +31,20 @@ export default function SignUpPage() {
       fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
     }}>
       <div className="auth-left-panel" style={{ flex: 1 }}>
-        <LeftPanel />
+        <AuthSlider />
       </div>
 
       <div style={{
-        width: 480,
-        flexShrink: 0,
+        flex: 1,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         padding: "32px 40px",
         background: "#09090b",
         overflowY: "auto",
+        position: "relative",
       }}>
+        <BorderBeam size={300} duration={8} delay={0} borderWidth={1.5} />
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
@@ -144,8 +53,8 @@ export default function SignUpPage() {
         >
           {/* Mobile logo */}
           <div className="auth-mobile-logo" style={{ display: "none", marginBottom: 32, alignItems: "center", gap: 8 }}>
-            <div style={{ width: 24, height: 24, borderRadius: 5, display: "flex", alignItems: "center", justifyContent: "center", filter: "drop-shadow(0 0 5px rgba(255,77,0,0.5))" }}>
-              <img src="/logo.svg" alt="Merica" style={{ width: 20, height: 20, filter: "brightness(0) saturate(100%) invert(35%) sepia(96%) saturate(2000%) hue-rotate(5deg) brightness(105%)" }} />
+            <div style={{ width: 24, height: 24, borderRadius: 5, display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <img src="/Mercia.png" alt="Merica" style={{ width: 20, height: 20, objectFit: "contain" }} />
             </div>
             <span style={{ fontWeight: 600, fontSize: 14, color: "#fafafa", letterSpacing: "-0.02em" }}>Merica</span>
           </div>
