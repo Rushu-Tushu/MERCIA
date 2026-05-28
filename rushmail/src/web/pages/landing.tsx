@@ -1,4 +1,8 @@
 import { useState, useEffect } from "react";
+import { EmailProvidersSection } from "../components/email-providers-section";
+import { NumberTicker } from "../components/ui/number-ticker";
+import { BentoGrid, BentoCard } from "../components/ui/bento-grid";
+import { AuroraText } from "../components/ui/aurora-text";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "wouter";
 import {
@@ -509,36 +513,42 @@ function FloatingCard({ children, style }: { children: React.ReactNode; style: R
 }
 
 // ─── DATA ─────────────────────────────────────────────────────────────────────
-const features = [
+const bentoFeatures = [
   {
-    icon: Eye,
-    title: "Real-Time Open Tracking",
-    desc: "Know the exact moment a recruiter opens your email — device, location, and timestamp included.",
+    name: "Real-Time Tracking",
+    description: "Know the exact moment your email is opened — device, location, and timestamp included.",
+    Icon: Eye,
+    className: "lg:col-span-2",
+    background: <div style={{ height: 140, width: "100%", background: "transparent" }} />,
+    href: "#",
+    cta: "Learn more",
   },
   {
-    icon: MousePointer,
-    title: "Link Click Analytics",
-    desc: "Every link becomes a tracked redirect. See exactly what recruiters click and when.",
+    name: "Resume Analytics",
+    description: "See when recruiters view your resume and for how long.",
+    Icon: FileText,
+    className: "lg:col-span-1",
+    background: <div style={{ height: 140, width: "100%", background: "transparent" }} />,
+    href: "#",
+    cta: "Learn more",
   },
   {
-    icon: FileText,
-    title: "Resume View Tracking",
-    desc: "Upload your resume and see when it's viewed, for how long, and how many times.",
+    name: "Ghosting Detection",
+    description: "Automatically flags inactivity and repeated opens without a reply.",
+    Icon: Clock,
+    className: "lg:col-span-1",
+    background: <div style={{ height: 140, width: "100%", background: "transparent" }} />,
+    href: "#",
+    cta: "Learn more",
   },
   {
-    icon: BarChart3,
-    title: "Engagement Scoring",
-    desc: "ColdPulse calculates a real score so you know who's Hot, Warm, or Cold instantly.",
-  },
-  {
-    icon: Clock,
-    title: "Ghosting Detection",
-    desc: "Automatically flags inactivity and repeated opens without reply.",
-  },
-  {
-    icon: Shield,
-    title: "Secure & Private",
-    desc: "Encrypted storage. First-party tracking pixels. No third-party data sharing.",
+    name: "Engagement Scoring",
+    description: "ColdPulse calculates a real score so you know who's Hot, Warm, or Cold instantly.",
+    Icon: BarChart3,
+    className: "lg:col-span-2",
+    background: <div style={{ height: 140, width: "100%", background: "transparent" }} />,
+    href: "#",
+    cta: "Learn more",
   },
 ];
 
@@ -752,7 +762,7 @@ export default function LandingPage() {
               display: "flex", alignItems: "center", gap: 10,
             }}>
               <div style={{ display: "flex", gap: 6 }}>
-                {["#ff5f57","#febc2e","#28c840"].map(c => (
+                {["#ff5f57", "#febc2e", "#28c840"].map(c => (
                   <div key={c} style={{ width: 10, height: 10, borderRadius: "50%", background: c }} />
                 ))}
               </div>
@@ -831,98 +841,116 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── STATS ─────────────────────────────────────────────────────────── */}
-      <section style={{ padding: "100px 24px 60px" }}>
-        <motion.div
-          initial="hidden" whileInView="show" viewport={{ once: true }}
-          variants={stagger}
-          style={{
-            maxWidth: 900, margin: "0 auto",
-            display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 1,
-            border: "1px solid var(--border)", borderRadius: 10, overflow: "hidden",
-          }}
-        >
-          {[
-            { value: "50K+", label: "Cold emails tracked" },
-            { value: "74%", label: "Average open rate" },
-            { value: "3×", label: "More interviews" },
-            { value: "<1s", label: "Tracking latency" },
-          ].map((s, i) => (
-            <motion.div key={s.label} variants={fadeUp} style={{
-              padding: "32px 28px", textAlign: "center",
-              background: "var(--surface-raised)",
-              borderRight: i < 3 ? "1px solid var(--border)" : "none",
-            }}>
-              <div style={{
-                fontSize: 32, fontWeight: 700, letterSpacing: "-0.04em",
-                color: "var(--text)", marginBottom: 6,
-              }}>{s.value}</div>
-              <div style={{
-                fontSize: 13, color: "var(--text-secondary)",
-                letterSpacing: "-0.01em",
-              }}>{s.label}</div>
-            </motion.div>
-          ))}
-        </motion.div>
-      </section>
+      <EmailProvidersSection />
 
       {/* ── FEATURES ──────────────────────────────────────────────────────── */}
-      <section id="features" style={{ padding: "80px 24px" }}>
+      <section id="features" style={{ padding: "100px 24px", background: "#000" }}>
         <motion.div
           initial="hidden" whileInView="show" viewport={{ once: true, margin: "-80px" }}
           variants={stagger}
           style={{ maxWidth: 1100, margin: "0 auto" }}
         >
           <motion.div variants={fadeUp} style={{ textAlign: "center", marginBottom: 56 }}>
-            <div style={{
-              fontSize: 11, fontWeight: 600, letterSpacing: "0.08em",
-              color: ORANGE, textTransform: "uppercase", marginBottom: 12,
-            }}>Features</div>
             <h2 style={{
-              fontSize: "clamp(28px, 4vw, 40px)", fontWeight: 700,
+              fontSize: "clamp(36px, 5vw, 48px)", fontWeight: 800,
               letterSpacing: "-0.03em", color: "var(--text)", margin: "0 0 14px",
             }}>
-              Everything you need to land the interview.
+              Start <AuroraText colors={["#ff4d00", "#ff7300", "#ffa600", "#ff2a00"]}>Approaching</AuroraText>
             </h2>
             <p style={{
-              fontSize: 15, color: "var(--text-secondary)", maxWidth: 440,
+              fontSize: 16, color: "var(--text-secondary)", maxWidth: 500,
               margin: "0 auto", lineHeight: 1.65, letterSpacing: "-0.01em",
             }}>
-              From the moment you hit send to the interview invite — ColdPulse tracks every step.
+              From the moment you hit send to the interview invite — ColdPulse tracks every step so you land the job faster.
             </p>
           </motion.div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 1 }}>
-            {features.map((f) => (
-              <motion.div key={f.title} variants={fadeUp} style={{
-                background: "var(--surface-raised)",
-                border: "1px solid var(--border)",
-                borderRadius: 0,
-                padding: "28px 24px",
-                marginTop: -1, marginLeft: -1,
-                transition: "background 0.2s",
-              }}
-                onMouseEnter={e => e.currentTarget.style.background = "var(--surface-overlay)"}
-                onMouseLeave={e => e.currentTarget.style.background = "var(--surface-raised)"}
-              >
-                <div style={{
-                  width: 34, height: 34, borderRadius: 7, marginBottom: 16,
-                  background: "rgba(255,255,255,0.04)", border: "1px solid var(--border)",
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                }}>
-                  <f.icon size={15} color="var(--text-secondary)" />
-                </div>
-                <h3 style={{
-                  fontSize: 14, fontWeight: 600, color: "var(--text)",
-                  margin: "0 0 8px", letterSpacing: "-0.01em",
-                }}>{f.title}</h3>
-                <p style={{
-                  fontSize: 13, color: "var(--text-secondary)", lineHeight: 1.65,
-                  margin: 0, letterSpacing: "-0.01em",
-                }}>{f.desc}</p>
+          <BentoGrid>
+            {bentoFeatures.map((f, i) => (
+              <motion.div key={i} variants={fadeUp} className={f.className}>
+                <BentoCard
+                  name={f.name}
+                  description={f.description}
+                  Icon={f.Icon}
+                  background={f.background}
+                  href={f.href}
+                  cta={f.cta}
+                  className="h-full w-full border-none shadow-none"
+                  style={{
+                    background: "linear-gradient(180deg, var(--surface-raised) 0%, rgba(13, 13, 13, 0.4) 100%)",
+                    border: "1px solid var(--border)",
+                    borderRadius: 16,
+                  }}
+                />
               </motion.div>
             ))}
-          </div>
+          </BentoGrid>
+        </motion.div>
+      </section>
+
+      {/* ── STATS ─────────────────────────────────────────────────────────── */}
+      <section style={{ padding: "100px 24px 60px" }}>
+        <motion.div
+          initial="hidden" whileInView="show" viewport={{ once: true }}
+          variants={stagger}
+          style={{
+            maxWidth: 1050, margin: "0 auto",
+            display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 20,
+          }}
+        >
+          {[
+            {
+              label: "Cold emails tracked",
+              value: 2181,
+              decimals: 0,
+              prefix: "",
+              suffix: "",
+            },
+            {
+              label: "Average open rate",
+              value: 90,
+              decimals: 0,
+              prefix: "",
+              suffix: "%",
+            },
+            {
+              label: "More interviews",
+              value: 3.0,
+              decimals: 1,
+              prefix: "",
+              suffix: "×",
+            },
+            {
+              label: "Tracking latency",
+              value: 0.8,
+              decimals: 1,
+              prefix: "<",
+              suffix: "s",
+            },
+          ].map((s) => (
+            <motion.div key={s.label} variants={fadeUp} style={{
+              padding: "36px 24px", textAlign: "center",
+              background: "linear-gradient(180deg, var(--surface-raised) 0%, rgba(13, 13, 13, 0.4) 100%)",
+              border: "1px solid var(--border)",
+              borderRadius: 12,
+              boxShadow: "0 8px 24px rgba(0, 0, 0, 0.16)",
+              display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center",
+            }}>
+              <div style={{
+                fontSize: 34, fontWeight: 700, letterSpacing: "-0.04em",
+                color: "var(--text)", marginBottom: 8,
+                display: "flex", alignItems: "center", justifyContent: "center",
+              }}>
+                {s.prefix && <span style={{ opacity: 0.6, marginRight: 2 }}>{s.prefix}</span>}
+                <NumberTicker value={s.value} decimalPlaces={s.decimals} />
+                {s.suffix && <span style={{ opacity: 0.8, marginLeft: 2 }}>{s.suffix}</span>}
+              </div>
+              <div style={{
+                fontSize: 13, color: "var(--text-secondary)",
+                letterSpacing: "-0.01em",
+              }}>{s.label}</div>
+            </motion.div>
+          ))}
         </motion.div>
       </section>
 
