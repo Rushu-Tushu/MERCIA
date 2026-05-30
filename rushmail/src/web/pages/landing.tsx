@@ -4,6 +4,7 @@ import { NumberTicker } from "../components/ui/number-ticker";
 import { BentoGrid, BentoCard } from "../components/ui/bento-grid";
 import { AuroraText } from "../components/ui/aurora-text";
 import { Text3DFlip } from "../components/ui/text-3d-flip";
+import { LightRays } from "../components/ui/light-rays";
 import TestimonialsSection from "../components/ui/TestimonialsSection";
 import MerciaPricingSection from "../components/ui/MerciaPricingSection";
 import FaqSection from "../components/ui/FaqSection";
@@ -38,11 +39,45 @@ function Navbar() {
     return () => window.removeEventListener("scroll", fn);
   }, []);
 
+  const handleSmoothScroll = (e: React.MouseEvent<HTMLAnchorElement>, targetId: string) => {
+    e.preventDefault();
+    const target = document.getElementById(targetId.replace('#', ''));
+    if (!target) return;
+
+    const targetPosition = target.getBoundingClientRect().top + window.scrollY;
+    const startPosition = window.scrollY;
+    const distance = targetPosition - startPosition;
+    const duration = 1200; // customized slow, elegant scroll
+    let start: number | null = null;
+
+    const animation = (currentTime: number) => {
+      if (start === null) start = currentTime;
+      const timeElapsed = currentTime - start;
+      const progress = Math.min(timeElapsed / duration, 1);
+
+      // easeInOutCubic for a smooth, premium feel
+      const ease = progress < 0.5
+        ? 4 * progress * progress * progress
+        : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+
+      window.scrollTo(0, startPosition + distance * ease);
+
+      if (timeElapsed < duration) {
+        requestAnimationFrame(animation);
+      }
+    };
+
+    requestAnimationFrame(animation);
+  };
+
   const navLinks = [
-    { label: "Features", href: "#features" },
+    { label: "Features", href: "#sending" },
+    { label: "How we work", href: "#features" },
     { label: "Analytics", href: "#analytics" },
-    { label: "Pricing", href: "#pricing" },
-    { label: "Docs", href: "#faq" },
+    { label: "Testimonials", href: "#testimonials" },
+    { label: "Usage", href: "#usage" },
+    { label: "FAQs", href: "#faq" },
+    { label: "About us", href: "#footer" },
   ];
 
   return (
@@ -87,16 +122,18 @@ function Navbar() {
             className="desktop-nav"
           >
             {navLinks.map(({ label, href }) => (
-              <a key={label} href={href} style={{
-                color: "var(--text-secondary)", textDecoration: "none",
-                fontSize: 13.5, fontWeight: 450, letterSpacing: "-0.01em",
-                padding: "6px 14px", borderRadius: 6,
-                transition: "color 0.15s, background 0.15s",
-                display: "block",
-              }}
+              <a key={label} href={href}
+                onClick={(e) => handleSmoothScroll(e, href)}
+                style={{
+                  color: "var(--text-secondary)", textDecoration: "none",
+                  fontSize: 13.5, fontWeight: 450, letterSpacing: "-0.01em",
+                  padding: "6px 14px", borderRadius: 6,
+                  transition: "color 0.15s, background 0.15s",
+                  display: "block",
+                }}
                 onMouseEnter={e => {
-                  e.currentTarget.style.color = "var(--text)";
-                  e.currentTarget.style.background = "rgba(255,255,255,0.05)";
+                  e.currentTarget.style.color = "#FF4D00";
+                  e.currentTarget.style.background = "rgba(255,77,0,0.05)";
                 }}
                 onMouseLeave={e => {
                   e.currentTarget.style.color = "var(--text-secondary)";
@@ -109,17 +146,6 @@ function Navbar() {
           {/* CTA */}
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <Link to="/sign-in">
-              <span style={{
-                color: "var(--text-secondary)", fontSize: 13.5, fontWeight: 450,
-                cursor: "pointer", padding: "7px 14px", borderRadius: 6,
-                transition: "color 0.15s",
-                letterSpacing: "-0.01em",
-              }}
-                onMouseEnter={e => e.currentTarget.style.color = "var(--text)"}
-                onMouseLeave={e => e.currentTarget.style.color = "var(--text-secondary)"}
-              >Sign in</span>
-            </Link>
-            <Link to="/sign-up">
               <span style={{
                 display: "inline-flex", alignItems: "center", gap: 6,
                 background: ORANGE, color: "white",
@@ -137,7 +163,7 @@ function Navbar() {
                   e.currentTarget.style.opacity = "1";
                   e.currentTarget.style.transform = "translateY(0)";
                 }}
-              >Get started <ArrowRight size={12} strokeWidth={2.5} /></span>
+              >Sign in <ArrowRight size={12} strokeWidth={2.5} /></span>
             </Link>
             {/* Mobile toggle */}
             <button
@@ -172,7 +198,10 @@ function Navbar() {
           >
             {navLinks.map(({ label, href }) => (
               <a key={label} href={href}
-                onClick={() => setMobileOpen(false)}
+                onClick={(e) => {
+                  setMobileOpen(false);
+                  handleSmoothScroll(e, href);
+                }}
                 style={{
                   display: "block", padding: "11px 4px",
                   color: "var(--text-secondary)", textDecoration: "none",
@@ -180,7 +209,7 @@ function Navbar() {
                   borderBottom: "1px solid var(--border-subtle)",
                   transition: "color 0.15s",
                 }}
-                onMouseEnter={e => e.currentTarget.style.color = "var(--text)"}
+                onMouseEnter={e => e.currentTarget.style.color = "#FF4D00"}
                 onMouseLeave={e => e.currentTarget.style.color = "var(--text-secondary)"}
               >{label}</a>
             ))}
@@ -189,17 +218,9 @@ function Navbar() {
                 <span style={{
                   display: "block", textAlign: "center",
                   padding: "10px", borderRadius: 8,
-                  border: "1px solid var(--border)",
-                  color: "var(--text-secondary)", fontSize: 14, cursor: "pointer",
-                }}>Sign in</span>
-              </Link>
-              <Link to="/sign-up" style={{ flex: 1 }}>
-                <span style={{
-                  display: "block", textAlign: "center",
-                  padding: "10px", borderRadius: 8,
                   background: ORANGE, color: "white",
                   fontSize: 14, fontWeight: 600, cursor: "pointer",
-                }}>Get started</span>
+                }}>Sign in</span>
               </Link>
             </div>
           </motion.div>
@@ -786,7 +807,9 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <EmailProvidersSection />
+      <section id="sending">
+        <EmailProvidersSection />
+      </section>
 
       {/* ── FEATURES ──────────────────────────────────────────────────────── */}
       <section id="features" style={{ padding: "100px 24px", background: "#000" }}>
@@ -834,7 +857,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── STATS ─────────────────────────────────────────────────────────── */}
-      <section style={{ padding: "100px 24px 60px" }}>
+      <section id="analytics" style={{ padding: "100px 24px 60px" }}>
         <motion.div
           initial="hidden" whileInView="show" viewport={{ once: true }}
           variants={stagger}
@@ -900,32 +923,35 @@ export default function LandingPage() {
       </section>
 
       {/* ── TESTIMONIALS ──────────────────────────────────────────────────── */}
-      <TestimonialsSection />
+      <section id="testimonials"><TestimonialsSection /></section>
 
       {/* ── PRICING ───────────────────────────────────────────────────────── */}
-      <MerciaPricingSection />
+      <section id="usage"><MerciaPricingSection /></section>
 
       {/* ── FAQ ───────────────────────────────────────────────────────────── */}
-      <FaqSection />
+      <section id="faq"><FaqSection /></section>
 
       {/* ── CTA ───────────────────────────────────────────────────────────── */}
-      <section style={{ padding: "120px 24px", background: "#000000", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
-        <p style={{ fontSize: "16px", color: "rgba(255,255,255,0.6)", marginBottom: "16px", letterSpacing: "0.04em", fontWeight: 500 }}>
-          make coldmailing simple with
-        </p>
-        <Text3DFlip
-          className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-extrabold tracking-tighter"
-          textClassName="text-white"
-          flipTextClassName="text-[#FF4D00]"
-          rotateDirection="top"
-          staggerDuration={0.06}
-        >
-          MERCIA
-        </Text3DFlip>
+      <section style={{ padding: "120px 24px", background: "#000000", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", position: "relative", overflow: "hidden" }}>
+        <LightRays count={10} speed={12} color="rgba(255, 77, 0, 0.30)" />
+        <div style={{ position: "relative", zIndex: 1 }}>
+          <p style={{ fontSize: "16px", color: "rgba(255,255,255,0.6)", marginBottom: "16px", letterSpacing: "0.04em", fontWeight: 500 }}>
+            make coldmailing simple with
+          </p>
+          <Text3DFlip
+            className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-extrabold tracking-tighter"
+            textClassName="text-white"
+            flipTextClassName="text-[#FF4D00]"
+            rotateDirection="top"
+            staggerDuration={0.06}
+          >
+            MERCIA
+          </Text3DFlip>
+        </div>
       </section>
 
       {/* ── FOOTER ────────────────────────────────────────────────────────── */}
-      <footer style={{
+      <footer id="footer" style={{
         background: "#000000",
         borderTop: "1px solid rgba(255,255,255,0.08)",
         padding: "60px 32px 40px",
@@ -952,12 +978,12 @@ export default function LandingPage() {
               <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
                 <h4 style={{ color: "#fff", fontSize: 14, fontWeight: 600 }}>Legal</h4>
                 <Link to="/termsandcondition">
-                  <span style={{ color: "rgba(255,255,255,0.6)", fontSize: 14, cursor: "pointer", transition: "color 0.2s" }} onMouseEnter={e => e.currentTarget.style.color = "#fff"} onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,0.6)"}>
+                  <span style={{ color: "rgba(255,255,255,0.6)", fontSize: 14, cursor: "pointer", transition: "color 0.2s" }} onMouseEnter={e => e.currentTarget.style.color = "#FF4D00"} onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,0.6)"}>
                     Terms & Conditions
                   </span>
                 </Link>
                 <Link to="/privacy">
-                  <span style={{ color: "rgba(255,255,255,0.6)", fontSize: 14, cursor: "pointer", transition: "color 0.2s" }} onMouseEnter={e => e.currentTarget.style.color = "#fff"} onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,0.6)"}>
+                  <span style={{ color: "rgba(255,255,255,0.6)", fontSize: 14, cursor: "pointer", transition: "color 0.2s" }} onMouseEnter={e => e.currentTarget.style.color = "#FF4D00"} onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,0.6)"}>
                     Privacy Policy
                   </span>
                 </Link>
