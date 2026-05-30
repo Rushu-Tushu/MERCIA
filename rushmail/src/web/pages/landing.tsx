@@ -1001,7 +1001,7 @@ export default function LandingPage() {
               © 2026 Mercia. All rights reserved.
             </p>
             <p style={{ color: "rgba(255,255,255,0.5)", fontSize: 13, margin: 0 }}>
-              Made by <a href="https://github.com/Rushu-Tushu" style={{ color: "#FF4D00", textDecoration: "none" }}>Rushu-Tushu</a>
+              Made by <a href="https://github.com/Rushu-Tushu" style={{ color: "#FF4D00", textDecoration: "none" }}>Rushu</a>
             </p>
           </div>
         </div>
