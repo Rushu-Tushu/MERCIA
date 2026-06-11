@@ -972,6 +972,7 @@ export default function LandingPage() {
               <p style={{ color: "rgba(255,255,255,0.6)", fontSize: 14, maxWidth: 280, lineHeight: 1.6 }}>
                 Built for the relentless job seeker. Track your cold emails, measure performance, and get more interviews.
               </p>
+
             </div>
 
             <div style={{ display: "flex", gap: 64, flexWrap: "wrap" }}>
@@ -1001,7 +1002,10 @@ export default function LandingPage() {
               © 2026 Mercia. All rights reserved.
             </p>
             <p style={{ color: "rgba(255,255,255,0.5)", fontSize: 13, margin: 0 }}>
-              Made by <a href="https://github.com/Rushu-Tushu" style={{ color: "#FF4D00", textDecoration: "none" }}>Rushu</a>
+              Contact: jontybhaiop@gmail.com
+            </p>
+            <p style={{ color: "rgba(255,255,255,0.5)", fontSize: 13, margin: 0 }}>
+              Made by <a href="https://github.com/Rushu-Tushu" target="_blank" rel="noopener noreferrer" style={{ color: "#FF4D00", textDecoration: "none" }}>Rushu</a>
             </p>
           </div>
         </div>
