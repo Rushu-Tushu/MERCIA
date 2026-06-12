@@ -1,9 +1,19 @@
 import { Hono } from "hono";
 import { db } from '../database/index.js';
 import * as schema from '../database/schema.js';
-import { eq, desc, or } from "drizzle-orm";
+import { eq, desc, or, and, count } from "drizzle-orm";
 import { requireAuth, authMiddleware } from '../middleware/auth.js';
 import { randomUUID } from "crypto";
+import { logAudit, logSecurityEvent } from "../utils/logger.js";
+import { zValidator } from "@hono/zod-validator";
+import { z } from "zod";
+
+const createTemplateSchema = z.object({
+  name: z.string().min(1).max(255),
+  subject: z.string().min(1).max(500),
+  bodyText: z.string().min(1).max(20000), // Enforce realistic limit
+  category: z.string().max(100).optional(),
+});
 
 const DEFAULT_TEMPLATES = [
   {
@@ -74,17 +84,29 @@ export const templatesRouter = new Hono()
 
     return c.json({ templates: [...defaults, ...userTemplates] }, 200);
   })
-  .post("/", requireAuth, async (c) => {
+  .post("/", requireAuth, zValidator("json", createTemplateSchema), async (c) => {
     const user = c.get("user")!;
-    const body = await c.req.json();
-    const { name, subject, bodyText, category } = body;
+    const { name, subject, bodyText, category } = c.req.valid("json");
 
-    if (!name || !subject || !bodyText) {
-      return c.json({ message: "name, subject, and body are required" }, 400);
+    // Resource Exhaustion Limit: Max 5 templates
+    const [result] = await db
+      .select({ count: count() })
+      .from(schema.templates)
+      .where(eq(schema.templates.userId, user.id));
+
+    if (result.count >= 5) {
+      await logSecurityEvent({
+        eventType: "resource_exhaustion_attempt",
+        severity: "LOW",
+        userId: user.id,
+        metadata: { resource: "templates" },
+      });
+      return c.json({ message: "You have reached the maximum limit of 5 templates." }, 403);
     }
 
+    const templateId = randomUUID();
     const [template] = await db.insert(schema.templates).values({
-      id: randomUUID(),
+      id: templateId,
       userId: user.id,
       name,
       subject,
@@ -92,12 +114,40 @@ export const templatesRouter = new Hono()
       category: category || "general",
     }).returning();
 
+    await logAudit({
+      userId: user.id,
+      actionType: "create_template",
+      resourceId: templateId,
+      status: "success",
+    });
+
     return c.json({ template }, 201);
   })
   .delete("/:id", requireAuth, async (c) => {
     const user = c.get("user")!;
     const { id } = c.req.param();
-    await db.delete(schema.templates)
-      .where(eq(schema.templates.id, id));
+
+    // BOLA Fix: Enforce userId check
+    const result = await db.delete(schema.templates)
+      .where(and(eq(schema.templates.id, id), eq(schema.templates.userId, user.id)))
+      .returning();
+
+    if (result.length === 0) {
+      await logSecurityEvent({
+        eventType: "bola_attempt",
+        severity: "HIGH",
+        userId: user.id,
+        metadata: { resource: "templates", id },
+      });
+      return c.json({ message: "Not found or forbidden" }, 404);
+    }
+
+    await logAudit({
+      userId: user.id,
+      actionType: "delete_template",
+      resourceId: id,
+      status: "success",
+    });
+
     return c.json({ success: true }, 200);
   });

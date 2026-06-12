@@ -10,9 +10,32 @@ import { notificationsRouter } from './routes/notifications.js';
 import { templatesRouter } from './routes/templates.js';
 import { resumesRouter } from './routes/resumes.js';
 import { connectedAccountsRouter } from './routes/connected-accounts.js';
+import { oauthRouter } from './routes/oauth.js';
+import { ipRateLimiter } from './middleware/rate-limit.js';
+import { cloudflareOriginProtection, securityHeaders } from './middleware/security.js';
+import { logSecurityEvent } from './utils/logger.js';
 
 const app = new Hono()
-  .use(cors({ origin: (origin) => origin ?? "*", credentials: true }))
+  .use("*", cloudflareOriginProtection)
+  .use("*", securityHeaders)
+  .use("*", ipRateLimiter)
+  .use("*", cors({ origin: (origin) => origin ?? "*", credentials: true }))
+  .onError(async (err, c) => {
+    console.error("Unhandled Error:", err);
+    await logSecurityEvent({
+      eventType: "unhandled_error",
+      severity: "MED",
+      ipAddress: c.req.header("cf-connecting-ip") || "unknown",
+      userAgent: c.req.header("user-agent"),
+      metadata: { error: err.message, path: c.req.path },
+    });
+
+    // Strip stack traces in production
+    if (process.env.NODE_ENV === "production") {
+      return c.json({ message: "Internal Server Error" }, 500);
+    }
+    return c.json({ message: err.message, stack: err.stack }, 500);
+  })
   .on(["GET", "POST"], "/api/auth/*", (c) => auth.handler(c.req.raw))
   .basePath("api")
   .get("/health", (c) => c.json({ status: "ok" }, 200))
@@ -22,18 +45,8 @@ const app = new Hono()
   .route("/notifications", notificationsRouter)
   .route("/templates", templatesRouter)
   .route("/resumes", resumesRouter)
-  .route("/connected-accounts", connectedAccountsRouter);
+  .route("/connected-accounts", connectedAccountsRouter)
+  .route("/oauth", oauthRouter);
 
 export type AppType = typeof app;
-app.get("/debug", (c) => {
-  const url = process.env.DATABASE_URL || "MISSING";
-  return c.json({
-    hasUrl: !!process.env.DATABASE_URL,
-    urlPrefix: url.substring(0, 15) + "...",
-    env: process.env.NODE_ENV,
-    betterAuthUrl: process.env.BETTER_AUTH_URL,
-    websiteUrl: process.env.WEBSITE_URL
-  });
-});
-
 export default app;

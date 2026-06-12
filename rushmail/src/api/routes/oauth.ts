@@ -3,7 +3,10 @@ import { db } from '../database/index.js';
 import * as schema from '../database/schema.js';
 import { eq, and } from "drizzle-orm";
 import { requireAuth, authMiddleware } from '../middleware/auth.js';
-import { randomUUID } from "crypto";
+import { randomUUID, randomBytes } from "crypto";
+import { encryptToken, decryptToken } from "../utils/crypto.js";
+import { logSecurityEvent } from "../utils/logger.js";
+import { setCookie, getCookie, deleteCookie } from "hono/cookie";
 
 // ─── Token refresh helpers ────────────────────────────────────────────────────
 
@@ -52,22 +55,29 @@ export async function getValidToken(account: typeof schema.connectedAccounts.$in
   const now = new Date();
   const bufferMs = 5 * 60 * 1000; // 5 min buffer
 
+  let accessToken = decryptToken(account.accessToken!);
+
   if (!account.expiresAt || account.expiresAt.getTime() - bufferMs > now.getTime()) {
-    return account.accessToken;
+    return accessToken;
   }
 
   // Need to refresh
   if (!account.refreshToken) throw new Error("No refresh token available — user must reconnect");
 
+  const decryptedRefreshToken = decryptToken(account.refreshToken);
+
   let refreshed: { accessToken: string; expiresAt: Date };
   if (account.provider === "gmail") {
-    refreshed = await refreshGmailToken(account.refreshToken);
+    refreshed = await refreshGmailToken(decryptedRefreshToken);
   } else {
-    refreshed = await refreshOutlookToken(account.refreshToken);
+    refreshed = await refreshOutlookToken(decryptedRefreshToken);
   }
 
   await db.update(schema.connectedAccounts)
-    .set({ accessToken: refreshed.accessToken, expiresAt: refreshed.expiresAt })
+    .set({
+      accessToken: encryptToken(refreshed.accessToken),
+      expiresAt: refreshed.expiresAt
+    })
     .where(eq(schema.connectedAccounts.id, account.id));
 
   return refreshed.accessToken;
@@ -86,6 +96,16 @@ export const oauthRouter = new Hono()
     const baseUrl = process.env.WEBSITE_URL?.replace(/\/$/, "") || "http://localhost:4200";
     const redirectUri = `${baseUrl}/api/oauth/gmail/callback`;
 
+    // Generate CSRF state
+    const state = randomBytes(32).toString("hex");
+    setCookie(c, "oauth_state", state, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "Lax",
+      maxAge: 10 * 60, // 10 minutes
+      path: "/",
+    });
+
     const params = new URLSearchParams({
       client_id: process.env.GOOGLE_CLIENT_ID,
       redirect_uri: redirectUri,
@@ -93,6 +113,7 @@ export const oauthRouter = new Hono()
       scope: "https://www.googleapis.com/auth/gmail.send https://www.googleapis.com/auth/userinfo.email",
       access_type: "offline",
       prompt: "consent",
+      state, // Include CSRF state
     });
     return c.redirect(`https://accounts.google.com/o/oauth2/v2/auth?${params}`);
   })
@@ -102,12 +123,28 @@ export const oauthRouter = new Hono()
     const user = c.get("user")!;
     const code = c.req.query("code");
     const error = c.req.query("error");
+    const state = c.req.query("state");
 
     const baseUrl = process.env.WEBSITE_URL?.replace(/\/$/, "") || "http://localhost:4200";
     const redirectUri = `${baseUrl}/api/oauth/gmail/callback`;
 
     if (error || !code) {
       return c.redirect(`${baseUrl}/settings?oauth=error&provider=gmail`);
+    }
+
+    // CSRF Check
+    const savedState = getCookie(c, "oauth_state");
+    deleteCookie(c, "oauth_state", { path: "/" });
+
+    if (!state || state !== savedState) {
+      await logSecurityEvent({
+        eventType: "invalid_oauth",
+        severity: "HIGH",
+        userId: user.id,
+        metadata: { provider: "gmail", reason: "State mismatch or missing" },
+        ipAddress: c.req.header("cf-connecting-ip") || "unknown",
+      });
+      return c.redirect(`${baseUrl}/settings?oauth=error&provider=gmail&msg=Invalid+OAuth+State`);
     }
 
     try {
@@ -142,10 +179,13 @@ export const oauthRouter = new Hono()
 
       const expiresAt = tokens.expires_in ? new Date(Date.now() + tokens.expires_in * 1000) : null;
 
+      const encryptedAccess = encryptToken(tokens.access_token);
+      const encryptedRefresh = tokens.refresh_token ? encryptToken(tokens.refresh_token) : null;
+
       if (existing) {
         await db.update(schema.connectedAccounts).set({
-          accessToken: tokens.access_token,
-          refreshToken: tokens.refresh_token || existing.refreshToken,
+          accessToken: encryptedAccess,
+          refreshToken: encryptedRefresh || existing.refreshToken,
           expiresAt,
           providerEmail,
         }).where(eq(schema.connectedAccounts.id, existing.id));
@@ -155,8 +195,8 @@ export const oauthRouter = new Hono()
           userId: user.id,
           provider: "gmail",
           providerEmail,
-          accessToken: tokens.access_token,
-          refreshToken: tokens.refresh_token || null,
+          accessToken: encryptedAccess,
+          refreshToken: encryptedRefresh,
           expiresAt,
         });
       }
@@ -177,12 +217,23 @@ export const oauthRouter = new Hono()
     const redirectUri = `${baseUrl}/api/oauth/outlook/callback`;
     const tenantId = process.env.MICROSOFT_TENANT_ID || "common";
 
+    // Generate CSRF state
+    const state = randomBytes(32).toString("hex");
+    setCookie(c, "oauth_state", state, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "Lax",
+      maxAge: 10 * 60, // 10 minutes
+      path: "/",
+    });
+
     const params = new URLSearchParams({
       client_id: process.env.MICROSOFT_CLIENT_ID,
       redirect_uri: redirectUri,
       response_type: "code",
       scope: "https://graph.microsoft.com/Mail.Send https://graph.microsoft.com/User.Read offline_access",
       response_mode: "query",
+      state, // Include CSRF state
     });
     return c.redirect(`https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/authorize?${params}`);
   })
@@ -192,6 +243,7 @@ export const oauthRouter = new Hono()
     const user = c.get("user")!;
     const code = c.req.query("code");
     const error = c.req.query("error");
+    const state = c.req.query("state");
 
     const baseUrl = process.env.WEBSITE_URL?.replace(/\/$/, "") || "http://localhost:4200";
     const tenantId = process.env.MICROSOFT_TENANT_ID || "common";
@@ -199,6 +251,21 @@ export const oauthRouter = new Hono()
 
     if (error || !code) {
       return c.redirect(`${baseUrl}/settings?oauth=error&provider=outlook`);
+    }
+
+    // CSRF Check
+    const savedState = getCookie(c, "oauth_state");
+    deleteCookie(c, "oauth_state", { path: "/" });
+
+    if (!state || state !== savedState) {
+      await logSecurityEvent({
+        eventType: "invalid_oauth",
+        severity: "HIGH",
+        userId: user.id,
+        metadata: { provider: "outlook", reason: "State mismatch or missing" },
+        ipAddress: c.req.header("cf-connecting-ip") || "unknown",
+      });
+      return c.redirect(`${baseUrl}/settings?oauth=error&provider=outlook&msg=Invalid+OAuth+State`);
     }
 
     try {
@@ -232,10 +299,13 @@ export const oauthRouter = new Hono()
 
       const expiresAt = tokens.expires_in ? new Date(Date.now() + tokens.expires_in * 1000) : null;
 
+      const encryptedAccess = encryptToken(tokens.access_token);
+      const encryptedRefresh = tokens.refresh_token ? encryptToken(tokens.refresh_token) : null;
+
       if (existing) {
         await db.update(schema.connectedAccounts).set({
-          accessToken: tokens.access_token,
-          refreshToken: tokens.refresh_token || existing.refreshToken,
+          accessToken: encryptedAccess,
+          refreshToken: encryptedRefresh || existing.refreshToken,
           expiresAt,
           providerEmail,
         }).where(eq(schema.connectedAccounts.id, existing.id));
@@ -245,8 +315,8 @@ export const oauthRouter = new Hono()
           userId: user.id,
           provider: "outlook",
           providerEmail,
-          accessToken: tokens.access_token,
-          refreshToken: tokens.refresh_token || null,
+          accessToken: encryptedAccess,
+          refreshToken: encryptedRefresh,
           expiresAt,
         });
       }

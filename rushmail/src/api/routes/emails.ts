@@ -5,6 +5,24 @@ import { eq, desc, and } from "drizzle-orm";
 import { requireAuth, authMiddleware } from '../middleware/auth.js';
 import { randomUUID } from "crypto";
 import { account } from '../database/auth-schema.js';
+import { generatePublicId, decryptToken, encryptToken } from "../utils/crypto.js";
+import { logAudit, logSecurityEvent } from "../utils/logger.js";
+import { emailSendingQuotas } from "../middleware/rate-limit.js";
+import { zValidator } from "@hono/zod-validator";
+import { z } from "zod";
+
+const sendEmailSchema = z.object({
+  to: z.union([z.string().email(), z.array(z.string().email())]),
+  subject: z.string().min(1).max(500),
+  html: z.string().min(1).max(100000),
+  scheduledAt: z.string().optional(),
+});
+
+const draftEmailSchema = z.object({
+  to: z.union([z.string().email(), z.array(z.string().email())]).optional(),
+  subject: z.string().max(500).optional(),
+  html: z.string().max(100000).optional(),
+});
 
 // ─── Send via Gmail API ───────────────────────────────────────────────────────
 async function refreshGmailToken(refreshToken: string): Promise<{ accessToken: string; expiresAt: Date }> {
@@ -39,19 +57,25 @@ async function getValidGmailToken(userId: string): Promise<{ token: string }> {
   const bufferMs = 5 * 60 * 1000;
   const now = new Date();
 
-  let accessToken = googleAccount.accessToken!;
+  // Tokens in DB are encrypted
+  let accessToken = decryptToken(googleAccount.accessToken!);
 
   if (googleAccount.accessTokenExpiresAt && googleAccount.accessTokenExpiresAt.getTime() - bufferMs < now.getTime()) {
     if (!googleAccount.refreshToken) throw new Error("NO_REFRESH_TOKEN");
-    const refreshed = await refreshGmailToken(googleAccount.refreshToken);
+    
+    const decryptedRefreshToken = decryptToken(googleAccount.refreshToken);
+    const refreshed = await refreshGmailToken(decryptedRefreshToken);
     accessToken = refreshed.accessToken;
-    // Update stored token
+    
+    // Update stored token (encrypted)
     await db.update(account)
-      .set({ accessToken: refreshed.accessToken, accessTokenExpiresAt: refreshed.expiresAt })
+      .set({ 
+        accessToken: encryptToken(refreshed.accessToken), 
+        accessTokenExpiresAt: refreshed.expiresAt 
+      })
       .where(eq(account.id, googleAccount.id));
   }
 
-  // accountId is the Google user ID (numeric), not email — caller must pass email separately
   return { token: accessToken };
 }
 
@@ -93,9 +117,6 @@ async function sendViaGmail(
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
-function generateTrackingId() {
-  return randomUUID();
-}
 
 function wrapBareUrls(html: string): string {
   if (/<[a-zA-Z]/.test(html)) return html;
@@ -107,8 +128,8 @@ function wrapBareUrls(html: string): string {
   return escaped.replace(/(https?:\/\/[^\s<>"']+)/g, '<a href="$1">$1</a>');
 }
 
-function injectTrackingPixel(html: string, trackingId: string, baseUrl: string): string {
-  const pixelUrl = `${baseUrl}/api/track/open/${trackingId}`;
+function injectTrackingPixel(html: string, publicTrackingId: string, baseUrl: string): string {
+  const pixelUrl = `${baseUrl}/api/track/open/${publicTrackingId}`;
   const pixel = `<img src="${pixelUrl}" width="1" height="1" style="display:none;" alt="" />`;
   if (html.includes("</body>")) return html.replace("</body>", `${pixel}</body>`);
   return html + pixel;
@@ -121,21 +142,31 @@ function injectTrackedLinks(
   baseUrl: string
 ): { html: string; links: { shortCode: string; originalUrl: string }[] } {
   const links: { shortCode: string; originalUrl: string }[] = [];
+  
+  const addLink = (url: string) => {
+    if (links.length >= 5) return null; // Max 5 limits enforced silently during link generation
+    const shortCode = generatePublicId();
+    links.push({ shortCode, originalUrl: url });
+    return shortCode;
+  };
+
   const withWrapped = html.replace(
     /(?<!href=")(https?:\/\/[^\s<>"']+)(?![^<]*?>)(?![^<]*?<\/a>)/g,
     (url) => {
-      const shortCode = randomUUID().replace(/-/g, "").substring(0, 12);
-      links.push({ shortCode, originalUrl: url });
+      const shortCode = addLink(url);
+      if (!shortCode) return url;
       return `<a href="${baseUrl}/api/track/click/${shortCode}">${url}</a>`;
     }
   );
+
   const urlRegex = /href="(https?:\/\/[^"]+)"/g;
   const newHtml = withWrapped.replace(urlRegex, (match, url) => {
     if (url.startsWith(baseUrl + "/api/track/")) return match;
-    const shortCode = randomUUID().replace(/-/g, "").substring(0, 12);
-    links.push({ shortCode, originalUrl: url });
+    const shortCode = addLink(url);
+    if (!shortCode) return match;
     return `href="${baseUrl}/api/track/click/${shortCode}"`;
   });
+
   return { html: newHtml, links };
 }
 
@@ -158,7 +189,7 @@ export const emailsRouter = new Hono()
           .where(eq(schema.emailEvents.emailId, email.id));
         return {
           ...email,
-          openCount: events.filter(e => e.type === "open").length,
+          openCount: email.totalOpens || 0,
           clickCount: events.filter(e => e.type === "click").length,
           events,
         };
@@ -167,22 +198,17 @@ export const emailsRouter = new Hono()
 
     return c.json({ emails: emailsWithStats }, 200);
   })
-  .post("/send", requireAuth, async (c) => {
+  .post("/send", requireAuth, emailSendingQuotas, zValidator("json", sendEmailSchema), async (c) => {
     const user = c.get("user")!;
-    const body = await c.req.json();
-    const { to, subject, html, scheduledAt } = body;
+    const { to, subject, html, scheduledAt } = c.req.valid("json");
 
-    if (!to || !subject || !html) {
-      return c.json({ message: "to, subject, and html are required" }, 400);
-    }
-
-    const trackingId = generateTrackingId();
+    const publicTrackingId = generatePublicId();
     const emailId = randomUUID();
     const baseUrl = process.env.WEBSITE_URL?.replace(/\/$/, "") || "http://localhost:4200";
 
     const processedHtml = wrapBareUrls(html);
     const { html: trackedHtml, links } = injectTrackedLinks(
-      injectTrackingPixel(processedHtml, trackingId, baseUrl),
+      injectTrackingPixel(processedHtml, publicTrackingId, baseUrl),
       emailId,
       user.id,
       baseUrl
@@ -224,6 +250,8 @@ export const emailsRouter = new Hono()
         subject,
         html: trackedHtml,
       });
+      // Zero out token from memory immediately
+      gmailToken = ""; 
     } catch (err: any) {
       // Save as draft if send fails
       await db.insert(schema.emails).values({
@@ -234,7 +262,7 @@ export const emailsRouter = new Hono()
         body: html,
         status: "draft",
         sentAt: null,
-        trackingId,
+        publicTrackingId,
         scheduledAt: scheduledAt ? new Date(scheduledAt) : null,
         engagementScore: 0,
       });
@@ -250,9 +278,12 @@ export const emailsRouter = new Hono()
       body: html,
       status: "sent",
       sentAt: now,
-      trackingId,
+      publicTrackingId,
       scheduledAt: scheduledAt ? new Date(scheduledAt) : null,
       engagementScore: 0,
+      firstOpenAt: null,
+      uniqueOpens: 0,
+      totalOpens: 0,
     });
 
     await db.insert(schema.notifications).values({
@@ -265,24 +296,32 @@ export const emailsRouter = new Hono()
       read: false,
     });
 
-    return c.json({ success: true, emailId, trackingId, sentVia: "gmail", fromEmail: senderEmail }, 201);
+    await logAudit({
+      userId: user.id,
+      actionType: "send_email",
+      resourceId: emailId,
+      status: "success",
+    });
+
+    return c.json({ success: true, emailId, publicTrackingId, sentVia: "gmail", fromEmail: senderEmail }, 201);
   })
-  .post("/draft", requireAuth, async (c) => {
+  .post("/draft", requireAuth, zValidator("json", draftEmailSchema), async (c) => {
     const user = c.get("user")!;
-    const body = await c.req.json();
-    const { to, subject, html } = body;
+    const { to, subject, html } = c.req.valid("json");
 
     const emailId = randomUUID();
-    const trackingId = generateTrackingId();
+    const publicTrackingId = generatePublicId();
+
+    const toString = Array.isArray(to) ? to.join(", ") : to || "";
 
     await db.insert(schema.emails).values({
       id: emailId,
       userId: user.id,
-      to: to || "",
+      to: toString,
       subject: subject || "",
       body: html || "",
       status: "draft",
-      trackingId,
+      publicTrackingId,
       engagementScore: 0,
     });
 
