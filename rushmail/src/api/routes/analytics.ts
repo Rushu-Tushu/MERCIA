@@ -17,13 +17,15 @@ export const analyticsRouter = new Hono()
 
     const emailIds = userEmails.map(e => e.id);
 
-    let allEvents: typeof schema.emailEvents.$inferSelect[] = [];
-    if (emailIds.length > 0) {
-      allEvents = await db
-        .select()
-        .from(schema.emailEvents)
-        .where(eq(schema.emailEvents.userId, user.id));
-    }
+    const allEvents = await db
+      .select()
+      .from(schema.emailEvents)
+      .where(eq(schema.emailEvents.userId, user.id));
+      
+    const userResumes = await db
+      .select()
+      .from(schema.resumes)
+      .where(eq(schema.resumes.userId, user.id));
 
     const totalEmails = userEmails.filter(e => e.status === "sent").length;
     const opens = allEvents.filter(e => e.type === "open");
@@ -62,11 +64,22 @@ export const analyticsRouter = new Hono()
         return bt - at;
       })
       .slice(0, 20)
-      .map(e => ({
-        ...e,
-        emailSubject: userEmails.find(em => em.id === e.emailId)?.subject || "Unknown",
-        emailTo: userEmails.find(em => em.id === e.emailId)?.to || "Unknown",
-      }));
+      .map(e => {
+        if (e.type === "resume_view") {
+          // url contains the resume url, we can find the matching resume
+          const resume = userResumes.find(r => r.url === e.url);
+          return {
+            ...e,
+            emailSubject: resume?.filename || "Resume",
+            emailTo: "Viewed via Link",
+          };
+        }
+        return {
+          ...e,
+          emailSubject: userEmails.find(em => em.id === e.emailId)?.subject || "Unknown",
+          emailTo: userEmails.find(em => em.id === e.emailId)?.to || "Unknown",
+        };
+      });
 
     // Avg engagement score
     const avgScore = userEmails.length > 0

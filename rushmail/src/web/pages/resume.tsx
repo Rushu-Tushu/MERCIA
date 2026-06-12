@@ -71,10 +71,10 @@ export default function Resume() {
     } catch {}
   };
 
-  const copyTrackingUrl = (trackingId: string) => {
-    const url = `${window.location.origin}/api/track/resume/${trackingId}`;
+  const copyTrackingUrl = (publicTrackingId: string) => {
+    const url = `${window.location.origin}/api/track/resume/${publicTrackingId}`;
     navigator.clipboard.writeText(url);
-    setCopied(trackingId);
+    setCopied(publicTrackingId);
     setTimeout(() => setCopied(null), 2000);
   };
 
@@ -211,17 +211,17 @@ export default function Resume() {
                 {/* Actions */}
                 <div style={{ display: "flex", gap: 6, flexShrink: 0 }}>
                   <button
-                    onClick={() => copyTrackingUrl(r.trackingId)}
+                    onClick={() => copyTrackingUrl(r.publicTrackingId)}
                     style={{
                       display: "flex", alignItems: "center", gap: 5,
                       background: "var(--surface-overlay)",
-                      color: copied === r.trackingId ? "#22c55e" : "var(--text-secondary)",
+                      color: copied === r.publicTrackingId ? "#22c55e" : "var(--text-secondary)",
                       border: "1px solid var(--border)",
                       borderRadius: 6, padding: "6px 12px", cursor: "pointer", fontSize: 12, fontWeight: 500,
                     }}
                   >
-                    {copied === r.trackingId ? <Check size={12} /> : <Copy size={12} />}
-                    {copied === r.trackingId ? "Copied" : "Copy Link"}
+                    {copied === r.publicTrackingId ? <Check size={12} /> : <Copy size={12} />}
+                    {copied === r.publicTrackingId ? "Copied" : "Copy Link"}
                   </button>
                   <a
                     href={r.url}
