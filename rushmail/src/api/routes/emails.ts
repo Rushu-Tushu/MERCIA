@@ -139,7 +139,8 @@ function injectTrackedLinks(
   html: string,
   emailId: string,
   userId: string,
-  baseUrl: string
+  baseUrl: string,
+  userResumes: typeof schema.resumes.$inferSelect[] = []
 ): { html: string; links: { shortCode: string; originalUrl: string }[] } {
   const links: { shortCode: string; originalUrl: string }[] = [];
   
@@ -153,6 +154,13 @@ function injectTrackedLinks(
   const withWrapped = html.replace(
     /(?<!href=")(https?:\/\/[^\s<>"']+)(?![^<]*?>)(?![^<]*?<\/a>)/g,
     (url) => {
+      if (url.startsWith(baseUrl + "/api/track/")) {
+        return `<a href="${url}">${url}</a>`;
+      }
+      const resume = userResumes.find(r => r.url === url);
+      if (resume) {
+        return `<a href="${baseUrl}/api/track/resume/${resume.publicTrackingId}">${url}</a>`;
+      }
       const shortCode = addLink(url);
       if (!shortCode) return url;
       return `<a href="${baseUrl}/api/track/click/${shortCode}">${url}</a>`;
@@ -162,6 +170,10 @@ function injectTrackedLinks(
   const urlRegex = /href="(https?:\/\/[^"]+)"/g;
   const newHtml = withWrapped.replace(urlRegex, (match, url) => {
     if (url.startsWith(baseUrl + "/api/track/")) return match;
+    const resume = userResumes.find(r => r.url === url);
+    if (resume) {
+      return `href="${baseUrl}/api/track/resume/${resume.publicTrackingId}"`;
+    }
     const shortCode = addLink(url);
     if (!shortCode) return match;
     return `href="${baseUrl}/api/track/click/${shortCode}"`;
@@ -207,11 +219,14 @@ export const emailsRouter = new Hono()
     const baseUrl = process.env.WEBSITE_URL?.replace(/\/$/, "") || "http://localhost:4200";
 
     const processedHtml = wrapBareUrls(html);
+    const userResumes = await db.select().from(schema.resumes).where(eq(schema.resumes.userId, user.id));
+
     const { html: trackedHtml, links } = injectTrackedLinks(
       injectTrackingPixel(processedHtml, publicTrackingId, baseUrl),
       emailId,
       user.id,
-      baseUrl
+      baseUrl,
+      userResumes
     );
 
     if (links.length > 0) {
