@@ -134,8 +134,8 @@ export default function Resume() {
                     onClick={handleAdd}
                     disabled={saving}
                     style={{ background: "var(--accent)", color: "white", border: "none", borderRadius: 6, padding: "8px 16px", fontWeight: 500, cursor: "pointer", fontSize: 13 }}
-                  >{saving ? "Adding…" : "Add & Generate Tracking Link"}</button>
-                  <span style={{ fontSize: 12, color: "var(--text-tertiary)" }}>We'll generate a tracked redirect URL</span>
+                  >{saving ? "Adding…" : "Save Resume URL"}</button>
+                  <span style={{ fontSize: 12, color: "var(--text-tertiary)" }}>We'll automatically track this link in your emails</span>
                 </div>
               </div>
             </motion.div>
@@ -210,19 +210,6 @@ export default function Resume() {
 
                 {/* Actions */}
                 <div style={{ display: "flex", gap: 6, flexShrink: 0 }}>
-                  <button
-                    onClick={() => copyTrackingUrl(r.publicTrackingId)}
-                    style={{
-                      display: "flex", alignItems: "center", gap: 5,
-                      background: "var(--surface-overlay)",
-                      color: copied === r.publicTrackingId ? "#22c55e" : "var(--text-secondary)",
-                      border: "1px solid var(--border)",
-                      borderRadius: 6, padding: "6px 12px", cursor: "pointer", fontSize: 12, fontWeight: 500,
-                    }}
-                  >
-                    {copied === r.publicTrackingId ? <Check size={12} /> : <Copy size={12} />}
-                    {copied === r.publicTrackingId ? "Copied" : "Copy Link"}
-                  </button>
                   <a
                     href={r.url}
                     target="_blank"
@@ -262,10 +249,10 @@ export default function Resume() {
         }}>
           <div style={{ fontSize: 12, fontWeight: 500, color: "var(--text)", marginBottom: 8 }}>How it works</div>
           <ol style={{ color: "var(--text-secondary)", fontSize: 12, lineHeight: 1.9, paddingLeft: 16, margin: 0 }}>
-            <li>Add your resume URL (Google Drive, Dropbox, Notion, etc.)</li>
-            <li>Copy the generated tracking link</li>
-            <li>Use this link in your cold emails instead of the direct URL</li>
-            <li>When a recruiter clicks, we log the view and redirect them transparently</li>
+            <li>Add your resume URL (Google Drive, Dropbox, Notion, etc.) to Mercia</li>
+            <li>In your cold emails, just paste the exact same original link</li>
+            <li>Mercia will automatically detect it and secretly track when recruiters view it</li>
+            <li>Your link stays authentic-looking without any "tracking" domain visible!</li>
           </ol>
         </div>
       </div>
